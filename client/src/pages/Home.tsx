@@ -8,10 +8,10 @@ export default function Home(): ReactElement {
     <>
       <Head title="Chat" />
       <div className="flex min-h-screen flex-row items-center justify-center">
-        <div className="flex-[0.7]">
+        <div className="flex-[0.65]">
           <PdfViewer />
         </div>
-        <div className="flex-[0.3]">
+        <div className="flex-[0.35]">
           <Chat />
         </div>
       </div>
