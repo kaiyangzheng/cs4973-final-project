@@ -31,6 +31,7 @@ migrate = Migrate(app, db)
 
 # import models to let the migrate tool know
 from src.models.user_model import User
+from src.models.query_model import Query
 
 # import api blueprint to register it with app
 from src.routes import api
