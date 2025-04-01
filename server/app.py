@@ -1,7 +1,8 @@
-from src import config, app
+from src import config, app, socketio
 
 if __name__ == "__main__":
-    app.run(host=config.HOST,
+    socketio.run(app,
+            host=config.HOST,
             port=config.PORT,
             debug=config.DEBUG)
     
