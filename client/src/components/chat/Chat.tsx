@@ -1,10 +1,10 @@
 import { useState, type ReactElement } from "react";
 import { FaArrowUp } from "react-icons/fa";
 import Message from "./Message";
-import { MessageType, MOCK_MESSAGES } from "./types";
+import { MessageType } from "./types";
 
 export default function Chat(): ReactElement {
-  const [messages, setMessages] = useState(MOCK_MESSAGES);
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [promptInput, setPromptInput] = useState("");
 
   const handlePromptSubmit = (e: React.FormEvent) => {
@@ -26,12 +26,17 @@ export default function Chat(): ReactElement {
       content: promptInput,
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    // TODO: call addQuery API and await a response to populate the message
     setPromptInput("");
   };
 
   return (
     <>
       <div className="flex h-screen flex-col bg-gray-600">
+        <div className="flex h-16 items-center justify-center text-white">
+          <h1 className="text-xl font-bold">How can I help?</h1>
+        </div>
         <div className="flex-1 overflow-y-auto p-4">
           {messages.map((message: MessageType, index) => (
             <Message key={index} message={message} />

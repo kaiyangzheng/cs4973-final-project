@@ -1,20 +1,26 @@
 import { ReactElement, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { Highlight } from "./types";
 import "react-pdf/dist/esm/Page/TextLayer.css";
+
+type PdfViewerProps = {
+  file: File | null;
+  highlights: Highlight[];
+  pageRefs: React.RefObject<{ [key: number]: HTMLDivElement | null }>;
+  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleTextSelection: (pageNumber: number) => void;
+};
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-// TODO: Implement text highlighting (https://chatgpt.com/c/67eb6e53-c120-8012-8fbd-90bc9a0740d5 - this code kind of works)
-export default function PdfViewer(): ReactElement {
-  const [file, setFile] = useState<File | null>(null);
+export default function PdfViewer({
+  file,
+  highlights,
+  pageRefs,
+  handleFileChange,
+  handleTextSelection,
+}: PdfViewerProps): ReactElement {
   const [numPages, setNumPages] = useState<number>(0);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile && selectedFile.type === "application/pdf") {
-      setFile(selectedFile);
-    }
-  };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -29,20 +35,54 @@ export default function PdfViewer(): ReactElement {
           />
         </label>
       ) : (
-        <div className="w-full max-w-2xl overflow-auto h-screen p-3 border border-gray-300 rounded-lg shadow-md flex justify-center">
+        <div className="w-full max-w-2xl overflow-auto h-screen p-3 rounded-lg shadow-md flex justify-center">
           <Document
             file={file}
             onLoadSuccess={({ numPages }) => setNumPages(numPages)}
           >
-            {Array.from(new Array(numPages), (_, index) => (
-              <Page
-                key={`page_${index + 1}`}
-                pageNumber={index + 1}
-                renderTextLayer={true} // Enables text selection
-                renderAnnotationLayer={false}
-                className="mb-4"
-              />
-            ))}
+            {Array.from(new Array(numPages), (_, index) => {
+              const pageNumber = index + 1;
+              return (
+                <div
+                  key={`page_${pageNumber}`}
+                  className="relative mb-4"
+                  ref={(el) => {
+                    pageRefs.current[pageNumber] = el;
+                  }}
+                  onMouseUp={() => handleTextSelection(pageNumber)} // Detects selection per page
+                >
+                  <Page
+                    pageNumber={pageNumber}
+                    renderTextLayer={true}
+                    renderAnnotationLayer={false}
+                  />
+
+                  {/* Render highlights for this page */}
+                  {highlights
+                    .filter((h) => h.pageNumber === pageNumber)
+                    .map((highlight, hIndex) =>
+                      highlight.rects.map((rect, rIndex) => {
+                        const pageRef = pageRefs.current[pageNumber];
+                        if (!pageRef) return null;
+
+                        const pageBounds = pageRef.getBoundingClientRect();
+                        return (
+                          <div
+                            key={`${hIndex}-${rIndex}`}
+                            className="absolute bg-yellow-300 opacity-50 pointer-events-none"
+                            style={{
+                              top: rect.top - pageBounds.top,
+                              left: rect.left - pageBounds.left,
+                              width: rect.width,
+                              height: rect.height,
+                            }}
+                          />
+                        );
+                      })
+                    )}
+                </div>
+              );
+            })}
           </Document>
         </div>
       )}
