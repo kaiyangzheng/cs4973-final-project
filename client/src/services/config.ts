@@ -1,39 +1,45 @@
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios from 'axios';
 
-/**
- * Function to handle successful responses
- */
-const handleRes = (res: AxiosResponse) => res;
+const api = axios.create({
+  timeout: 30000, // 30 seconds
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-/**
- * Function to handle errors
- */
-const handleErr = (err: AxiosError) => {
-  // eslint-disable-next-line no-console
-  console.log(err);
-  return Promise.reject(err);
-};
-
-const api = axios.create({ withCredentials: true });
-
-/**
- * Add a request interceptor to the Axios instance.
- */
+// Request interceptor
 api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => config,
-  (error: AxiosError) => handleErr(error)
+  (config) => {
+    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    return config;
+  },
+  (error) => {
+    console.error('API Request Error:', error);
+    return Promise.reject(error);
+  }
 );
 
-/**
- * Add a response interceptor to the Axios instance.
- */
+// Response interceptor
 api.interceptors.response.use(
-  (response: AxiosResponse) => handleRes(response),
-  (error: AxiosError) => handleErr(error)
+  (response) => {
+    console.log(`API Response: ${response.status} from ${response.config.url}`);
+    // For debugging, log the actual response data
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Response data:', response.data);
+    }
+    return response;
+  },
+  (error) => {
+    if (error.response) {
+      console.error(`API Error: ${error.response.status} ${error.response.statusText} from ${error.config.url}`);
+      console.error('Error data:', error.response.data);
+    } else if (error.request) {
+      console.error('API Error: No response received');
+    } else {
+      console.error('API Error:', error.message);
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default api;

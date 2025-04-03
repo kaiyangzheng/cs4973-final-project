@@ -13,6 +13,8 @@ export default function Home(): ReactElement {
     handleTextSelection,
     handleClearSelections,
     handleRemoveFile,
+    extractAllText,
+    isExtracting
   } = usePdfViewer();
 
   return (
@@ -44,6 +46,9 @@ export default function Home(): ReactElement {
             pageRefs={pageRefs}
             handleFileChange={handleFileChange}
             handleTextSelection={handleTextSelection}
+            isExtracting={isExtracting}
+            extractAllText={extractAllText}
+            handleRemoveFile={handleRemoveFile}
           />
         </div>
         {file && (

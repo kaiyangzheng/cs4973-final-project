@@ -1,54 +1,87 @@
-# React + TypeScript + Vite
+# Research Paper Assistant - Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The client-side application for the Research Paper Assistant, built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- PDF viewer with text selection capabilities
+- Interactive chat interface with real-time updates
+- Paper content analysis and categorization
+- Related research suggestions
+- Responsive design with Tailwind CSS
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+client/
+├── public/              # Static assets
+├── src/
+│   ├── components/     # React components
+│   │   ├── chat/       # Chat interface components
+│   │   └── pdf/        # PDF viewer components
+│   ├── hooks/          # Custom React hooks
+│   ├── services/       # API and utility services
+│   └── types/          # TypeScript type definitions
+├── .env.example        # Environment variables template
+└── package.json        # Project dependencies
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
+- Node.js 16 or higher
+- npm or yarn
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Setup
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env` file from the template:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Update the `.env` file with your server URL:
+   ```
+   VITE_SERVER_URL=http://localhost:8000
+   ```
+
+### Running the Development Server
+```bash
+npm run dev
 ```
+
+The application will be available at http://localhost:5173
+
+### Building for Production
+```bash
+npm run build
+```
+
+The built files will be in the `dist` directory.
+
+## Key Components
+
+### Chat Interface
+- Real-time message updates
+- Support for text selection and PDF content
+- Paper categorization display
+- Error handling and loading states
+
+### PDF Viewer
+- PDF file upload and display
+- Text selection and extraction
+- Content analysis integration
+
+## API Integration
+
+The client communicates with the server through the following endpoints:
+- `POST /api/queries/` - Submit a new query
+- `GET /api/queries/` - Get query history
+- `DELETE /api/queries/` - Clear query history
+
+## Contributing
+
+Please follow the project's coding standards and submit pull requests for any improvements.

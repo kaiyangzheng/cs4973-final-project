@@ -1,1 +1,33 @@
 .DS_Store
+node_modules
+.env
+venv
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Build outputs
+/dist
+/build
+*.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+*.log
+
+# Editor files
+.vscode/*
+.idea/
+*.suo
+*.sw?
+
+# Data files
+*.pkl
+server/cs_papers_embeddings.pkl
+
+# Database
+*.sqlite
+*.db

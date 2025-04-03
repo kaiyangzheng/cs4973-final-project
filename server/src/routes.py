@@ -4,5 +4,5 @@ from src.controllers.query_controller import queries
 # main blueprint to be registered with application
 api = Blueprint('api', __name__)
 
-# register user with api blueprint
-api.register_blueprint(queries, url_prefix="/queries")
+# register user with api blueprint and set trailing slash behavior
+api.register_blueprint(queries, url_prefix="/queries/")

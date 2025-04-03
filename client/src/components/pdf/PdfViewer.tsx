@@ -1,6 +1,9 @@
 import { ReactElement, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Highlight } from "./types";
+import { usePdfContext } from "../../hooks/usePdfContext";
+import { FaFileAlt, FaTimes } from "react-icons/fa";
+// @ts-ignore
 import "react-pdf/dist/esm/Page/TextLayer.css";
 
 type PdfViewerProps = {
@@ -9,6 +12,9 @@ type PdfViewerProps = {
   pageRefs: React.RefObject<{ [key: number]: HTMLDivElement | null }>;
   handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleTextSelection: (pageNumber: number) => void;
+  isExtracting?: boolean;
+  extractAllText?: () => Promise<string | null>;
+  handleRemoveFile?: () => void;
 };
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -19,14 +25,47 @@ export default function PdfViewer({
   pageRefs,
   handleFileChange,
   handleTextSelection,
+  isExtracting = false,
+  extractAllText = async () => null,
+  handleRemoveFile = () => {}
 }: PdfViewerProps): ReactElement {
   const [numPages, setNumPages] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [extractionProgress, setExtractionProgress] = useState<boolean>(false);
+  const { selectedText, isSelectionActive, pdfContent, setPdfContent } = usePdfContext();
+
+  // Function to extract all text from the PDF
+  const handleExtractAllText = async () => {
+    if (!file) return;
+    
+    setExtractionProgress(true);
+    
+    try {
+      if (pdfContent) {
+        const text = await extractAllText();
+        if (text && text.length > 0) {
+          console.log(`Successfully extracted ${text.length} characters of text`);
+        } else {
+          console.error("Failed to extract text from PDF");
+          alert("Could not extract text from this PDF. Try selecting text manually.");
+        }
+      } else {
+        console.error("No PDF content available");
+        alert("No PDF content available. Try uploading the file again.");
+      }
+    } catch (error) {
+      console.error("Error extracting text:", error);
+      alert("Error extracting text. Try selecting text manually.");
+    } finally {
+      setExtractionProgress(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
       {!file ? (
         <label className="cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-white shadow-md transition hover:bg-blue-600">
-          Upload File
+          Upload PDF
           <input
             type="file"
             className="hidden"
@@ -35,55 +74,120 @@ export default function PdfViewer({
           />
         </label>
       ) : (
-        <div className="w-full max-w-2xl overflow-auto h-screen p-3 rounded-lg shadow-md flex justify-center">
-          <Document
-            file={file}
-            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-          >
-            {Array.from(new Array(numPages), (_, index) => {
-              const pageNumber = index + 1;
-              return (
-                <div
-                  key={`page_${pageNumber}`}
-                  className="relative mb-4"
-                  ref={(el) => {
-                    pageRefs.current[pageNumber] = el;
-                  }}
-                  onMouseUp={() => handleTextSelection(pageNumber)} // Detects selection per page
-                >
-                  <Page
-                    pageNumber={pageNumber}
-                    renderTextLayer={true}
-                    renderAnnotationLayer={false}
-                  />
-
-                  {/* Render highlights for this page */}
-                  {highlights
-                    .filter((h) => h.pageNumber === pageNumber)
-                    .map((highlight, hIndex) =>
-                      highlight.rects.map((rect, rIndex) => {
-                        const pageRef = pageRefs.current[pageNumber];
-                        if (!pageRef) return null;
-
-                        const pageBounds = pageRef.getBoundingClientRect();
-                        return (
-                          <div
-                            key={`${hIndex}-${rIndex}`}
-                            className="absolute bg-yellow-300 opacity-50 pointer-events-none"
-                            style={{
-                              top: rect.top - pageBounds.top,
-                              left: rect.left - pageBounds.left,
-                              width: rect.width,
-                              height: rect.height,
-                            }}
-                          />
-                        );
-                      })
-                    )}
+        <div className="w-full max-w-2xl relative h-screen flex flex-col">
+          <div className="flex justify-between items-center bg-gray-800 text-white p-2">
+            <div className="flex items-center">
+              <FaFileAlt className="mr-2" />
+              <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={handleExtractAllText}
+                className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 rounded"
+                title="Extract all text from PDF"
+                disabled={extractionProgress}
+              >
+                {extractionProgress ? 'Extracting...' : 'Extract All Text'}
+              </button>
+              <button 
+                onClick={handleRemoveFile}
+                className="bg-red-600 hover:bg-red-700 text-white rounded p-1"
+                title="Remove PDF"
+              >
+                <FaTimes size={12} />
+              </button>
+            </div>
+          </div>
+          
+          {isSelectionActive && (
+            <div className="absolute top-8 left-0 right-0 z-10 bg-blue-100 text-blue-800 p-2 rounded border border-blue-300 m-2">
+              <h3 className="font-bold">Selected text:</h3>
+              <p className="text-sm">{selectedText?.substring(0, 200)}{selectedText && selectedText.length > 200 ? '...' : ''}</p>
+              <p className="text-xs text-blue-600 mt-1">Ask questions about this specific selection!</p>
+            </div>
+          )}
+          
+          {isExtracting && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 z-20">
+              <div className="bg-white p-4 rounded-lg text-center shadow-lg">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto"></div>
+                <p className="mt-2 font-medium">Extracting PDF content...</p>
+                <p className="text-xs text-gray-600 mt-1">Using client-side processing with PDF.js</p>
+              </div>
+            </div>
+          )}
+          
+          <div className="overflow-auto h-full p-3 rounded-lg shadow-md flex justify-center">
+            <Document
+              file={file}
+              onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+              loading={
+                <div className="flex items-center justify-center h-40">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                 </div>
-              );
-            })}
-          </Document>
+              }
+              error={
+                <div className="text-red-500 p-4 text-center">
+                  <p className="font-bold">Error</p>
+                  <p>Failed to load PDF. Please try another file.</p>
+                </div>
+              }
+            >
+              {Array.from(new Array(numPages), (_, index) => {
+                const pageNumber = index + 1;
+                return (
+                  <div
+                    key={`page_${pageNumber}`}
+                    className="relative mb-4"
+                    ref={(el) => {
+                      pageRefs.current[pageNumber] = el;
+                    }}
+                    onMouseUp={() => handleTextSelection(pageNumber)} // Detects selection per page
+                  >
+                    <Page
+                      pageNumber={pageNumber}
+                      renderTextLayer={true}
+                      renderAnnotationLayer={false}
+                      className="pdf-page"
+                      loading={
+                        <div className="h-80 w-full flex items-center justify-center">
+                          <div className="animate-pulse bg-gray-200 h-full w-full"></div>
+                        </div>
+                      }
+                    />
+                    
+                    <div className="absolute top-0 right-0 bg-gray-800 text-white px-2 py-1 text-xs rounded-bl">
+                      Page {pageNumber} of {numPages}
+                    </div>
+
+                    {/* Render highlights for this page */}
+                    {highlights
+                      .filter((h) => h.pageNumber === pageNumber)
+                      .map((highlight, hIndex) =>
+                        highlight.rects.map((rect, rIndex) => {
+                          const pageRef = pageRefs.current[pageNumber];
+                          if (!pageRef) return null;
+
+                          const pageBounds = pageRef.getBoundingClientRect();
+                          return (
+                            <div
+                              key={`${hIndex}-${rIndex}`}
+                              className="absolute bg-yellow-300 opacity-50 pointer-events-none"
+                              style={{
+                                top: rect.top - pageBounds.top,
+                                left: rect.left - pageBounds.left,
+                                width: rect.width,
+                                height: rect.height,
+                              }}
+                            />
+                          );
+                        })
+                      )}
+                  </div>
+                );
+              })}
+            </Document>
+          </div>
         </div>
       )}
     </div>
