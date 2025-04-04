@@ -50,19 +50,22 @@ export default function Chat(): ReactElement {
   };
 
   useEffect(() => {
-    const checkPendingMessages = async () => {
-      console.log("Checking for updates to pending messages...");
-      try {
-        // Get all queries from the server
-        const allQueries = await getQueries();
-        console.log("Received queries:", allQueries);
-        
-        if (!allQueries || allQueries.length === 0) {
-          console.log("No queries found.");
-      return;
+    const pollInterval = 10000; // 10 seconds
+    const MAX_POLLS = 60; // 10 minutes of polling
+    let pollCount = 0;
+    
+    // Reset poll count when messages change and there are pending messages
+    if (messages.some(msg => msg.role === 'assistant' && (msg.content === 'Thinking...' || msg.pending === true))) {
+      pollCount = 0;
     }
-
-        // Update messages with the latest responses
+    
+    const checkPendingMessages = async () => {
+      try {
+        const fetchedQueries = await getQueries();
+        console.log("Received queries:", fetchedQueries);
+        
+        // Sort queries by ID in descending order to prioritize newest queries
+        const sortedQueries = [...fetchedQueries].sort((a, b) => b.id - a.id);
         setMessages(prevMessages => {
           const newMessages = [...prevMessages];
           
@@ -79,36 +82,50 @@ export default function Chat(): ReactElement {
               const userPrompt = userMessage.content.trim();
               console.log("Looking for update to prompt:", userPrompt);
               
-              // Check if we have a response for this prompt
-              const matchingQueries = allQueries.filter((q: Query) => {
+              // Find the most recent query that matches the user prompt
+              const matchingQueries = sortedQueries.filter((q: Query) => {
                 const queryPrompt = q.prompt.trim();
+                const userPromptTrimmed = userPrompt.trim();
+                console.log(`Comparing: "${queryPrompt}" (${q.id}) vs "${userPromptTrimmed}" - exact match: ${queryPrompt === userPromptTrimmed}, case insensitive: ${queryPrompt.toLowerCase() === userPromptTrimmed.toLowerCase()}, pending: ${q.pending}`);
                 return (
-                  (queryPrompt === userPrompt || 
-                   queryPrompt.toLowerCase() === userPrompt.toLowerCase()) && 
+                  (queryPrompt === userPromptTrimmed || 
+                   queryPrompt.toLowerCase() === userPromptTrimmed.toLowerCase()) && 
                   q.pending === false
                 );
               });
               
+              console.log("All matching queries:", matchingQueries.map(q => ({ id: q.id, prompt: q.prompt, created_at: q.created_at })));
+              
               if (matchingQueries.length > 0) {
-                const matchingQuery = matchingQueries[0];
+                // Log all matching queries with their IDs and creation times
+                console.log("Matching queries before selection:", matchingQueries.map(q => 
+                  `ID: ${q.id}, Created: ${q.created_at}, Prompt: "${q.prompt.substring(0, 30)}..."`
+                ));
+                
+                const mostRecentQuery = matchingQueries.reduce((latest, current) => {
+                  console.log(`Comparing queries - Current ID: ${current.id}, Latest ID: ${latest.id}, Using: ${current.id > latest.id ? 'current' : 'latest'}`);
+                  return current.id > latest.id ? current : latest;
+                });
+                
+                console.log("Selected most recent query ID:", mostRecentQuery.id, "created at:", mostRecentQuery.created_at);
                 console.log("Found updated response for:", userPrompt);
-                console.log("Response:", matchingQuery.response);
-                console.log("Paper categories from query:", matchingQuery.paper_categories);
+                console.log("Response:", mostRecentQuery.response);
+                console.log("Paper categories from query:", mostRecentQuery.paper_categories);
                 
                 // Update the message with the response
                 newMessages[i] = {
                   role: "assistant",
-                  content: matchingQuery.response,
+                  content: mostRecentQuery.response,
                   pending: false,
                   metadata: {
                     ...(message.metadata || {}),
-                    paper_categories: matchingQuery.paper_categories || []
+                    paper_categories: mostRecentQuery.paper_categories || []
                   }
                 };
                 console.log("Updated message metadata:", newMessages[i].metadata);
               } else {
                 // Check if there's a pending query for this prompt
-                const pendingQuery = allQueries.find((q: Query) => {
+                const pendingQuery = sortedQueries.find((q: Query) => {
                   const queryPrompt = q.prompt.trim();
                   return (
                     (queryPrompt === userPrompt || 
@@ -134,22 +151,14 @@ export default function Chat(): ReactElement {
           return newMessages;
         });
       } catch (error) {
-        console.error("Error checking pending messages:", error);
+        console.error("Error fetching queries:", error);
       }
     };
-
-    // Create a polling interval to check for updates to pending messages
-    const hasPendingMessages = messages.some(msg => 
-      msg.role === "assistant" && (msg.content === "Thinking..." || msg.pending === true)
-    );
-    
-    // Reset poll count when messages change and we have pending messages
-    let pollCount = 0;
-    const MAX_POLLS = 60; // Increase max polls to 60 (10 minutes at 10-second intervals)
     
     const interval = setInterval(async () => {
       // Only poll if there are pending messages and we haven't reached the max
-      if (hasPendingMessages && pollCount < MAX_POLLS) {
+      if (messages.some(msg => msg.role === 'assistant' && (msg.content === 'Thinking...' || msg.pending === true)) && pollCount < MAX_POLLS) {
+        console.log("Checking for updates to pending messages...");
         await checkPendingMessages();
         pollCount++;
         
@@ -172,13 +181,13 @@ export default function Chat(): ReactElement {
           });
         }
       }
-    }, 10000); // Poll every 10 seconds
+    }, pollInterval);
     
     // Run an immediate check if we have pending messages
-    if (hasPendingMessages) {
+    if (messages.some(msg => msg.role === 'assistant' && (msg.content === 'Thinking...' || msg.pending === true))) {
       checkPendingMessages();
     }
-
+    
     return () => clearInterval(interval);
   }, [messages]);
 
@@ -295,6 +304,8 @@ export default function Chat(): ReactElement {
         const data = await response.json();
         console.log("Received response data:", data);
         console.log("Paper categories from response:", data.paper_categories);
+        console.log("Response ID:", data.id, "Created at:", data.created_at);
+        console.log("Full response text:", data.response?.substring(0, 100) + "...");
 
         // Update the temporary assistant message with the actual response
         setMessages(prev => {

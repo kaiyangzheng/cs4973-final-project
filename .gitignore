@@ -27,6 +27,7 @@ yarn-debug.log*
 # Data files
 *.pkl
 server/cs_papers_embeddings.pkl
+server/data/cs_papers_api.csv
 
 # Database
 *.sqlite
