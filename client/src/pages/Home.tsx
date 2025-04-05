@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import Head from "../components/Head";
 import Chat from "../components/chat/Chat";
 import PdfViewer from "../components/pdf/PdfViewer";
-import { usePdfViewer } from "../hooks/usePdfViewer";
+import { usePdfContext } from "../hooks/usePdf";
 
 export default function Home(): ReactElement {
   const {
@@ -10,10 +10,10 @@ export default function Home(): ReactElement {
     highlights,
     pageRefs,
     handleFileChange,
-    handleTextSelection,
+    handleTextHighlight,
     handleClearSelections,
     handleRemoveFile,
-  } = usePdfViewer();
+  } = usePdfContext();
 
   return (
     <>
@@ -43,7 +43,7 @@ export default function Home(): ReactElement {
             highlights={highlights}
             pageRefs={pageRefs}
             handleFileChange={handleFileChange}
-            handleTextSelection={handleTextSelection}
+            handleTextHighlight={handleTextHighlight}
           />
         </div>
         {file && (

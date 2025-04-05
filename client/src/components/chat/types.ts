@@ -1,6 +1,15 @@
 export interface MessageType {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
+  pending?: boolean;
+  metadata?: {
+    usingSelection?: boolean;
+    selectionLength?: number;
+    selectionPreview?: string;
+    isFullDocument?: boolean;
+    paper_categories?: string[];
+    [key: string]: unknown;
+  };
 }
 
 export const MOCK_MESSAGES: MessageType[] = [

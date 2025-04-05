@@ -5,12 +5,19 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
+from flask_cors import CORS
 
 # loading environment variables
 load_dotenv()
 
 # declaring flask application
 app = Flask(__name__)
+
+# Configure Flask to not redirect for slashes
+app.url_map.strict_slashes = False
+
+# Enable CORS with the simplest configuration
+CORS(app)
 
 # calling the dev configuration
 config = Config().dev_config
