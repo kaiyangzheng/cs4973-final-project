@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from "react";
+import { useEffect, useState, useRef, type ReactElement } from "react";
 import { FaArrowUp, FaFile, FaPaintBrush, FaRegFileAlt } from "react-icons/fa";
 import Message from "./Message";
 import { MessageType } from "./types";
@@ -12,6 +12,17 @@ export default function Chat(): ReactElement {
   const { socket } = useSocket();
   const { file, selectedText, allText, handleClearSelections } =
     usePdfContext();
+
+  // Add ref for the chat container
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to bottom of chat
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  };
 
   useEffect(() => {
     socket.on("query_response", (response) => {
@@ -33,12 +44,20 @@ export default function Chat(): ReactElement {
         }
         return prevMessages;
       });
+
+      // Scroll to bottom when receiving a response
+      setTimeout(scrollToBottom, 0);
     });
 
     return () => {
       socket.off("query_response");
     };
   }, [socket]);
+
+  // Add effect to scroll to bottom whenever messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const isFullDocumentSelected = selectedText === allText;
 
@@ -49,18 +68,14 @@ export default function Chat(): ReactElement {
       return;
     }
 
-    setTimeout(() => {
-      const chatContainer = document.querySelector(".flex-1.overflow-y-auto");
-      if (chatContainer) {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-      }
-    }, 0);
-
     const newMessage: MessageType = {
       role: "user",
       content: promptInput,
     };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+    // Scroll to bottom immediately after adding user message
+    scrollToBottom();
 
     // TODO: call addQuery API and await a response to populate the message
     const addQueryRequest: QueryRequest = {
@@ -97,6 +112,9 @@ export default function Chat(): ReactElement {
     };
     setMessages((prevMessages) => [...prevMessages, newResponseMessage]);
 
+    // Scroll to bottom again after adding assistant message
+    scrollToBottom();
+
     setPromptInput("");
   };
 
@@ -112,7 +130,8 @@ export default function Chat(): ReactElement {
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
+        {/* Add ref to the chat container */}
+        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4">
           {messages.map((message: MessageType, index) => (
             <Message key={index} message={message} />
           ))}
