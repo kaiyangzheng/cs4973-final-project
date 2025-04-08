@@ -1,1 +1,50 @@
 .DS_Store
+node_modules
+server/data/cs_papers_api.csv
+
+# Ignore the entire trained model directory
+server/data/trained_model/
+
+# Large dataset files
+server/data/*.csv
+server/data/*.json
+server/data/finetune/
+
+# Database files
+*.db
+server/instance/
+
+# Environment variables and secrets
+.env
+.env.local
+.env.development
+.env.production
+
+# Log files
+*.log
+server/logs/
+client/logs/
+
+# Cache files
+.cache/
+__pycache__/
+server/__pycache__/
+server/src/__pycache__/
+server/src/**/__pycache__/
+.pytest_cache/
+
+# Build files
+client/dist/
+client/build/
+
+# Debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+server/cs_papers_embeddings.pkl

@@ -83,17 +83,28 @@ def run_async_task(flask_app, query_id, prompt, paper_content, socket_id):
                     query.response = result.get("response", "No response received")
                     query.pending = False
 
+                    # Check for categories in either key (preferring 'categories' if available)
+                    categories = None
+                    if 'categories' in result and result['categories']:
+                        categories = result['categories']
+                        print(f"Found categories in 'categories' key: {categories}")
+                    elif 'paper_categories' in result and result['paper_categories']:
+                        categories = result['paper_categories']
+                        print(f"Found categories in 'paper_categories' key: {categories}")
+                    
                     # Store paper categories as JSON string if they exist
-                    if 'paper_categories' in result and result['paper_categories']:
-                        query.paper_categories = json.dumps(result['paper_categories'])
-                        print(f"Added paper categories for query {query_id}: {result['paper_categories']}")
+                    if categories:
+                        query.paper_categories = json.dumps(categories)
+                        print(f"Added categories for query {query_id}: {categories}")
 
                     db.session.commit()
                     print(f"Successfully updated query {query_id}, pending={query.pending}")
                     
                     # Emit the result to the specific socket ID
                     if socket_id in active_sockets:
-                        socketio.emit('query_response', query.to_dict(), room=socket_id)
+                        response_data = query.to_dict()
+                        print(f"Emitting response with categories: {response_data.get('categories')}")
+                        socketio.emit('query_response', response_data, room=socket_id)
                         print(f"Emitted response to socket {socket_id}")
                     else:
                         print(f"Socket {socket_id} is no longer active, not emitting response")

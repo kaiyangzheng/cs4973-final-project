@@ -26,6 +26,8 @@ export default function Chat(): ReactElement {
 
   useEffect(() => {
     socket.on("query_response", (response) => {
+      console.log("Response from server:", response); // Debug log
+      
       setMessages((prevMessages) => {
         const lastMessage = prevMessages[prevMessages.length - 1];
         if (lastMessage && lastMessage.pending) {
@@ -37,7 +39,7 @@ export default function Chat(): ReactElement {
               pending: false,
               metadata: {
                 ...lastMessage.metadata,
-                paper_categories: response.paper_categories,
+                paper_categories: response.categories || response.paper_categories,
               },
             },
           ];
@@ -97,6 +99,7 @@ export default function Chat(): ReactElement {
     }
 
     const data = await response.json();
+    console.log("Initial response data:", data); // Debug log
 
     const newResponseMessage: MessageType = {
       role: "assistant",
@@ -107,7 +110,7 @@ export default function Chat(): ReactElement {
         selectionLength: selectedText.length,
         selectionPreview: selectedText.slice(0, 50),
         isFullDocument: isFullDocumentSelected,
-        paper_categories: data.paper_categories,
+        paper_categories: data.categories || data.paper_categories,
       },
     };
     setMessages((prevMessages) => [...prevMessages, newResponseMessage]);

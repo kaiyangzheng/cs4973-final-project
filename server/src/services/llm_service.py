@@ -7,6 +7,7 @@ from .rag_service import rag_service
 from .llm_client import call_llm
 from src.models.query_model import UserQuery
 from src import db
+from .model_service import model_service  # Import the new model service
 
 class CodeAgent:
     """
@@ -52,17 +53,17 @@ class CodeAgent:
             if paper_text:
                 print(f"Processing paper content of length: {len(paper_text)}")
                 
-                # Categorize the paper
+                # Categorize the paper using the new model service
                 try:
-                    from src.services.vector_db import categorize_paper, vector_db
+                    from src.services.vector_db import vector_db
                     
                     # Generate a unique ID based on content hash
                     import hashlib
                     paper_id = hashlib.md5(paper_text[:5000].encode('utf-8')).hexdigest()
                     
-                    # Categorize the paper
-                    print("Categorizing paper...")
-                    paper_categories = categorize_paper(paper_text)  # Remove await since it's synchronous
+                    # Categorize the paper using the model service
+                    print("Categorizing paper using model service...")
+                    paper_categories = model_service.predict_categories(paper_text)
                     print(f"Paper categories: {paper_categories}")  
                     
                     # Add categories to vector database
@@ -77,11 +78,13 @@ class CodeAgent:
             
             # Generate response using RAG
             print("Generating response using RAG...")
+            # We'll let the RAG service handle the paper categories internally
             response = await rag_service.generate_response(enhanced_prompt, paper_text)
             print(f"RAG response received, length: {len(response)}")
             
             # Store this interaction in conversation history if socket_id is provided
             if socket_id:
+                # Also store paper categories if available
                 self._update_conversation_history(socket_id, prompt, response)
             
             # Prepare the final response
@@ -91,19 +94,34 @@ class CodeAgent:
                 "pending": False
             }
             
-            # Add paper information if available
+            # Add paper categories to the response if available
             if paper_categories:
-                result["paper_categories"] = paper_categories
-                
+                try:
+                    # Get human-readable labels for the categories
+                    category_labels = [
+                        {"code": cat, "label": model_service.get_category_label(cat)}
+                        for cat in paper_categories
+                    ]
+                    # Include under both keys for compatibility
+                    result["categories"] = category_labels
+                    result["paper_categories"] = category_labels
+                except Exception as e:
+                    print(f"Error adding category labels to response: {str(e)}")
+                    # Fallback to just using the codes
+                    simple_categories = [{"code": cat, "label": cat} for cat in paper_categories]
+                    result["categories"] = simple_categories
+                    result["paper_categories"] = simple_categories
+            
             return result
             
         except Exception as e:
-            print(f"Error in process_query: {str(e)}")
+            print(f"Error processing query: {str(e)}")
             import traceback
-            print(traceback.format_exc())
+            traceback.print_exc()
+            
             return {
                 "success": False,
-                "response": f"I couldn't process your request due to an error: {str(e)}",
+                "response": f"Sorry, I encountered an error while processing your query. Please try again later. Error: {str(e)}",
                 "pending": False
             }
     
