@@ -5,6 +5,16 @@ from typing import List, Dict, Any, Optional, Tuple
 import pickle
 import hashlib
 
+# Try to import the semantic embedding module
+try:
+    from src.services.semantic_embedding import get_semantic_embedding, get_embedding_dimension
+    USE_SEMANTIC_EMBEDDING = True
+    print("Using semantic embeddings for vector search")
+except ImportError as e:
+    print(f"Error importing semantic embedding module: {str(e)}")
+    USE_SEMANTIC_EMBEDDING = False
+    print("Semantic embedding module not available, falling back to hash-based embeddings")
+
 # Simple in-memory vector database for now
 # In production, you would use a proper vector database like Pinecone, Qdrant, etc.
 class VectorDatabase:
@@ -46,21 +56,68 @@ class VectorDatabase:
             List of (metadata, similarity) tuples
         """
         if not self.vectors:
+            print("Warning: Vector database is empty!")
             return []
             
         # Convert query vector to numpy array if it isn't already
         query_vector = np.array(query_vector)
         
+        # Print dimensions for debugging
+        print(f"Query vector shape: {query_vector.shape}")
+        print(f"Database vectors shape: {np.array(self.vectors).shape}")
+        
         # Ensure query vector has the same dimensions as database vectors
         if len(query_vector) != len(self.vectors[0]):
+            print(f"Warning: Query vector dimension ({len(query_vector)}) doesn't match database vector dimension ({len(self.vectors[0])})")
             # Pad or truncate query vector to match database vector dimensions
             if len(query_vector) < len(self.vectors[0]):
                 query_vector = np.pad(query_vector, (0, len(self.vectors[0]) - len(query_vector)))
             else:
                 query_vector = query_vector[:len(self.vectors[0])]
         
-        # Calculate cosine similarities
-        similarities = np.dot(self.vectors, query_vector)
+        # Normalize query vector with safety check
+        query_norm = np.linalg.norm(query_vector)
+        if query_norm > 0:
+            query_vector = query_vector / query_norm
+        
+        # Calculate cosine similarities more safely
+        similarities = []
+        for i, vec in enumerate(self.vectors):
+            try:
+                # Ensure vectors have no NaN values
+                if np.isnan(vec).any() or np.isnan(query_vector).any():
+                    similarity = 0.0
+                else:
+                    # Normalize database vector with safety check
+                    vec_norm = np.linalg.norm(vec)
+                    if vec_norm > 0:
+                        vec = vec / vec_norm
+                    
+                    # Calculate cosine similarity
+                    similarity = float(np.dot(vec, query_vector))
+                    
+                    # Handle potential NaN
+                    if np.isnan(similarity):
+                        similarity = 0.0
+            except Exception as e:
+                print(f"Error calculating similarity for vector {i}: {str(e)}")
+                similarity = 0.0
+                
+            similarities.append(similarity)
+        
+        similarities = np.array(similarities)
+        
+        # Replace any remaining NaN values with zeros
+        similarities = np.nan_to_num(similarities, nan=0.0)
+        
+        print("Similarities range:")
+        if len(similarities) > 0:
+            print(f"Min: {np.min(similarities)}, Max: {np.max(similarities)}, Mean: {np.mean(similarities)}")
+            # Print how many non-zero similarities
+            non_zero = np.count_nonzero(similarities)
+            print(f"Non-zero similarities: {non_zero} out of {len(similarities)} ({non_zero/len(similarities)*100:.2f}%)")
+        else:
+            print("No similarities calculated")
         
         # Apply category boosting if categories are provided
         if boost_categories and len(boost_categories) > 0:
@@ -75,11 +132,18 @@ class VectorDatabase:
                         # Boost proportional to number of matching categories
                         boost = category_boost * len(matching_categories) / len(boost_categories)
                         similarities[i] += boost
-                        print(f"Boosting paper {metadata.get('title', 'Unknown')} by {boost} for matching categories: {matching_categories}")
+                        # print(f"Boosting paper {metadata.get('title', 'Unknown')} by {boost} for matching categories: {matching_categories}")
         
         # Get top k results
         top_indices = np.argsort(similarities)[-top_k:][::-1]
-        return [(self.metadata[i], float(similarities[i])) for i in top_indices]
+        results = [(self.metadata[i], float(similarities[i])) for i in top_indices]
+        
+        # Print titles and similarities of top results
+        print("Top results:")
+        for paper, sim in results:
+            print(f"  {paper.get('title', 'Unknown')}: {sim:.4f}")
+        
+        return results
         
     def get_categories(self) -> List[str]:
         """Get all unique categories in the database"""
@@ -109,6 +173,30 @@ class VectorDatabase:
 vector_db = VectorDatabase()
 
 def get_embedding(text: str) -> np.ndarray:
+    """
+    Generate embeddings for text, using semantic embeddings if available,
+    otherwise falling back to hash-based embeddings.
+    
+    Args:
+        text: The text to generate embeddings for
+        
+    Returns:
+        numpy array of embeddings
+    """
+    # Check if semantic embeddings are available
+    if USE_SEMANTIC_EMBEDDING:
+        try:
+            # Use the semantic embedding model
+            return get_semantic_embedding(text)
+        except Exception as e:
+            print(f"Error using semantic embedding: {str(e)}. Falling back to hash-based embedding.")
+            # Fall back to hash-based embedding
+            return _get_hash_embedding(text)
+    else:
+        # Use hash-based embedding
+        return _get_hash_embedding(text)
+
+def _get_hash_embedding(text: str) -> np.ndarray:
     """Generate a simple hash-based embedding for the text"""
     # Generate a hash of the text
     hash_obj = hashlib.sha256(text.encode())

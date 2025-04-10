@@ -2,12 +2,30 @@ import os
 import json
 import asyncio
 import time
-from src.services.vector_db import vector_db, _get_hash_embedding
+from src.services.vector_db import vector_db, get_embedding
 from src.services.llm_client import call_llm
 
+# Project Description
+"""
+Research and academic papers in computer science contain complex technical concepts, methodologies, and terminology
+that can be challenging to comprehend. Our project implements an LLM-powered Retrieval-Augmented Generation (RAG) 
+system that helps users understand and analyze CS research papers.
+
+Key features:
+- PDF extraction and processing of computer science research papers
+- Vector embeddings and semantic search for relevant content retrieval
+- Automatic paper categorization using both rule-based and ML approaches
+- Context-enhanced LLM responses for technical questions about paper content
+- Paper similarity search to find related research
+
+This script processes the Kaggle CS papers dataset, extracting paper metadata, generating embeddings,
+and categorizing papers for integration with the RAG system. The processed data enhances the system's
+ability to provide accurate, contextually relevant responses to user queries about technical content.
+"""
+
 # Configuration
-USE_OPENAI_EMBEDDINGS = False  # Set to True to use OpenAI embeddings (requires API quota)
-BATCH_SIZE = 10000  # Process papers in batches
+USE_SEMANTIC_EMBEDDINGS = True  # Set to True to use the semantic embedding model
+BATCH_SIZE = 300000  # Process papers in batches
 DELAY_BETWEEN_BATCHES = 0  # Seconds to wait between batches
 
 async def load_kaggle_papers(csv_path: str):
@@ -27,7 +45,7 @@ async def load_kaggle_papers(csv_path: str):
 
         total_papers = len(papers)
         print(f"Loaded {total_papers} papers from {csv_path}")
-        print(f"Using {'OpenAI' if USE_OPENAI_EMBEDDINGS else 'hash-based'} embeddings")
+        print(f"Using {'semantic' if USE_SEMANTIC_EMBEDDINGS else 'hash-based'} embeddings")
 
         # Process papers in batches
         for batch_start in range(0, total_papers, BATCH_SIZE):
@@ -62,20 +80,12 @@ async def load_kaggle_papers(csv_path: str):
                         "abstract": content,
                         "introduction": "",  # These would be extracted in a real system
                         "conclusion": "",
+                        "content": content,  # Add content field for direct access
                         "url": f"https://arxiv.org/abs/{paper_id}" if paper_id else ""
                     }
 
-                    # Generate embedding
-                    if USE_OPENAI_EMBEDDINGS:
-                        try:
-                            from src.services.vector_db import get_embedding
-                            embedding = await get_embedding(content)
-                        except Exception as e:
-                            print(f"Error getting OpenAI embedding for paper {i}/{total_papers}: {str(e)}")
-                            print("Falling back to hash-based embedding")
-                            embedding = _get_hash_embedding(content)
-                    else:
-                        embedding = _get_hash_embedding(content)
+                    # Generate embedding using our new get_embedding function that uses semantic embeddings
+                    embedding = get_embedding(content)
 
                     # Add to vector database
                     vector_db.add_paper_category(paper_id, categories)
@@ -89,7 +99,7 @@ async def load_kaggle_papers(csv_path: str):
                     continue
 
             # Save progress after each batch
-            vector_db.save_embeddings('cs_papers_embeddings.pkl')
+            vector_db.save_embeddings('cs_papers_semantic_embeddings.pkl' if USE_SEMANTIC_EMBEDDINGS else 'cs_papers_embeddings.pkl')
             print(f"Saved progress after batch {batch_start//BATCH_SIZE + 1}")
 
             # Wait between batches to avoid rate limits
@@ -98,7 +108,7 @@ async def load_kaggle_papers(csv_path: str):
                 time.sleep(DELAY_BETWEEN_BATCHES)
 
         print("Finished processing all papers")
-        print("Saved final embeddings to cs_papers_embeddings.pkl")
+        print(f"Saved final embeddings to {'cs_papers_semantic_embeddings.pkl' if USE_SEMANTIC_EMBEDDINGS else 'cs_papers_embeddings.pkl'}")
 
     except Exception as e:
         print(f"Error loading papers: {str(e)}")

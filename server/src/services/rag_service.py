@@ -37,35 +37,68 @@ class RAGService:
                     print(f"Predicted paper categories for search boosting: {paper_categories}")
                 except Exception as e:
                     print(f"Error predicting paper categories: {str(e)}")
+                    paper_categories = []
             
             # Search for similar papers with category boosting if categories are available
             similar_papers = vector_db.search(
                 query_embedding, 
-                top_k=5, 
+                top_k=5,  # Increase to improve chances of finding relevant papers
                 boost_categories=paper_categories
             )
+            
+            # Filter out papers with zero similarity
+            similar_papers = [(paper, sim) for paper, sim in similar_papers if sim > 0]
+            
+            if not similar_papers:
+                print("No papers with non-zero similarity found")
+                
+                # Alternative approach: try searching without categories
+                if paper_categories:
+                    print("Trying search without category boosting...")
+                    similar_papers = vector_db.search(
+                        query_embedding, 
+                        top_k=10,
+                        boost_categories=None
+                    )
+                    similar_papers = [(paper, sim) for paper, sim in similar_papers if sim > 0]
+                    
+                # If still no results, try a broader search approach
+                if not similar_papers:
+                    print("No papers found. Using fallback method to find any papers...")
+                    similar_papers = vector_db.search(
+                        query_embedding, 
+                        top_k=5,
+                        boost_categories=None
+                    )
             
             # Extract relevant sections from each paper
             context_snippets = []
             for paper, similarity in similar_papers:
-                if 'content' in paper:
-                    snippets = self._extract_relevant_sections(paper['content'], query)
-                    if snippets:
-                        # Include paper categories if available
-                        paper_id = paper.get('id')
-                        paper_cats = vector_db.get_paper_categories(paper_id) if paper_id else []
-                        
-                        context_snippets.append({
-                            'title': paper.get('title', 'Unknown Paper'),
-                            'snippets': snippets,
-                            'categories': paper_cats,  # Include paper categories
-                            'similarity': similarity   # Include similarity score
-                        })
+                print(f"Processing paper with similarity {similarity}: {paper.get('title', 'Unknown')}")
+                snippets = self._extract_relevant_sections(paper, query)
+                if snippets:
+                    # Include paper categories if available
+                    paper_id = paper.get('id')
+                    paper_cats = vector_db.get_paper_categories(paper_id) if paper_id else []
+                    
+                    context_snippets.append({
+                        'title': paper.get('title', 'Unknown Paper'),
+                        'snippets': snippets,
+                        'categories': paper_cats,  # Include paper categories
+                        'similarity': similarity   # Include similarity score
+                    })
+                else:
+                    print(f"No relevant snippets found in paper: {paper.get('title', 'Unknown')}")
             
+            if not context_snippets:
+                print("No context snippets found in any paper")
+                
             return context_snippets
             
         except Exception as e:
             print(f"Error finding relevant context: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return []
     
     def _extract_relevant_sections(self, paper: Dict[str, Any], query: str) -> List[Dict[str, Any]]:
@@ -79,30 +112,68 @@ class RAGService:
         Returns:
             List of relevant sections with metadata
         """
-        # This is a simplified implementation
-        # In a real system, you would use more sophisticated NLP techniques
-        
-        # Extract key sections (abstract, introduction, conclusion)
-        sections = {
-            "abstract": paper.get("abstract", ""),
-            "introduction": paper.get("introduction", ""),
-            "conclusion": paper.get("conclusion", "")
-        }
-        
-        # Find sections containing query terms
-        relevant_sections = []
-        for section_name, content in sections.items():
-            if content and any(term.lower() in content.lower() for term in query.split()):
-                relevant_sections.append({
-                    "section": section_name,
-                    "content": content[:self.context_window],  # Limit context length
-                    "paper_title": paper.get("title", "Untitled"),
-                    "paper_authors": paper.get("authors", "Unknown"),
-                    "paper_year": paper.get("year", ""),
-                    "paper_url": paper.get("url", "")
-                })
-        
-        return relevant_sections
+        try:
+            # Handle different paper data structures
+            if isinstance(paper, dict):
+                # Check if paper has 'content' key (direct structure)
+                if 'content' in paper:
+                    # Direct content structure - extract from content field
+                    content = paper.get('content', '')
+                    if not content:
+                        print(f"Warning: Paper content is empty for paper: {paper.get('title', 'Unknown')}")
+                        return []
+                        
+                    # Create a single section with the content
+                    return [{
+                        "section": "content",
+                        "content": content[:self.context_window],
+                        "paper_title": paper.get("title", "Untitled"),
+                        "paper_authors": paper.get("authors", "Unknown"),
+                        "paper_year": paper.get("year", ""),
+                        "paper_url": paper.get("url", "")
+                    }]
+                
+                # Otherwise use the section-based approach
+                # Extract key sections (abstract, introduction, conclusion)
+                sections = {
+                    "abstract": paper.get("abstract", ""),
+                    "introduction": paper.get("introduction", ""),
+                    "conclusion": paper.get("conclusion", "")
+                }
+                
+                # Make sure query is well-formed
+                query_terms = [term.lower() for term in query.split() if term]
+                if not query_terms:
+                    query_terms = ["the"]  # Fallback to ensure we get some results
+                
+                # Find sections containing query terms
+                relevant_sections = []
+                for section_name, content in sections.items():
+                    if not content:
+                        continue
+                        
+                    try:
+                        # Check if any query term is in the content
+                        if any(term in content.lower() for term in query_terms):
+                            relevant_sections.append({
+                                "section": section_name,
+                                "content": content[:self.context_window],  # Limit context length
+                                "paper_title": paper.get("title", "Untitled"),
+                                "paper_authors": paper.get("authors", "Unknown"),
+                                "paper_year": paper.get("year", ""),
+                                "paper_url": paper.get("url", "")
+                            })
+                    except Exception as e:
+                        print(f"Error processing section {section_name}: {str(e)}")
+                
+                return relevant_sections
+            else:
+                print(f"Warning: Paper is not a dictionary: {type(paper)}")
+                return []
+                
+        except Exception as e:
+            print(f"Error extracting relevant sections: {str(e)}")
+            return []
     
     async def generate_response(self, query: str, paper_content: Optional[str] = None, use_rag: bool = True) -> str:
         """
@@ -130,6 +201,9 @@ class RAGService:
         
         # Find relevant context with category boosting
         context_snippets = await self.find_relevant_context(query, paper_content, paper_categories)
+        print("context snippets:")
+        print(context_snippets)
+
         # Format context for the prompt
         context_prompt = ""
         if context_snippets and use_rag:

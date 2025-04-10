@@ -48,3 +48,4 @@ yarn-error.log*
 *.swp
 *.swo
 server/cs_papers_embeddings.pkl
+server/cs_papers_semantic_embeddings.pkl
