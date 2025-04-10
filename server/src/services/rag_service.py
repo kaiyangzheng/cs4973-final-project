@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional
 import numpy as np
 from .vector_db import vector_db, get_embedding
 from .llm_client import call_llm
+from .model_service import model_service  # Import model service for category labels
 
 class RAGService:
     """
@@ -13,24 +14,52 @@ class RAGService:
     def __init__(self):
         self.context_window = 2000  # Number of tokens to use for context
     
-    async def find_relevant_context(self, query: str, paper_content: str) -> List[Dict[str, Any]]:
-        """Find relevant context from the paper database"""
+    async def find_relevant_context(self, query: str, paper_content: Optional[str] = None, paper_categories: List[str] = None) -> List[Dict[str, Any]]:
+        """
+        Find relevant context from the paper database
+        
+        Args:
+            query: The user's query
+            paper_content: Optional content of the current paper
+            paper_categories: Optional categories of the current paper for boosting similar papers
+            
+        Returns:
+            List of context snippets from relevant papers
+        """
         try:
             # Get embedding for the query
-            query_embedding = get_embedding(query)  # Remove await since it's synchronous
+            query_embedding = get_embedding(query)
             
-            # Search for similar papers
-            similar_papers = vector_db.search(query_embedding, top_k=5)
+            # Get paper categories if not provided but paper content is available
+            if not paper_categories and paper_content:
+                try:
+                    paper_categories = model_service.predict_categories(paper_content)
+                    print(f"Predicted paper categories for search boosting: {paper_categories}")
+                except Exception as e:
+                    print(f"Error predicting paper categories: {str(e)}")
+            
+            # Search for similar papers with category boosting if categories are available
+            similar_papers = vector_db.search(
+                query_embedding, 
+                top_k=5, 
+                boost_categories=paper_categories
+            )
             
             # Extract relevant sections from each paper
             context_snippets = []
-            for paper, _ in similar_papers:
+            for paper, similarity in similar_papers:
                 if 'content' in paper:
                     snippets = self._extract_relevant_sections(paper['content'], query)
                     if snippets:
+                        # Include paper categories if available
+                        paper_id = paper.get('id')
+                        paper_cats = vector_db.get_paper_categories(paper_id) if paper_id else []
+                        
                         context_snippets.append({
                             'title': paper.get('title', 'Unknown Paper'),
-                            'snippets': snippets
+                            'snippets': snippets,
+                            'categories': paper_cats,  # Include paper categories
+                            'similarity': similarity   # Include similarity score
                         })
             
             return context_snippets
@@ -86,21 +115,58 @@ class RAGService:
         Returns:
             Generated response with relevant context
         """
-        # Find relevant context
-        context_snippets = await self.find_relevant_context(query, paper_content)
+        # Get categories for the current paper if available
+        paper_categories = []
+        if paper_content:
+            try:
+                paper_categories = model_service.predict_categories(paper_content)
+                print(f"Current paper categories: {paper_categories}")
+            except Exception as e:
+                print(f"Error getting paper categories: {str(e)}")
+        
+        # Find relevant context with category boosting
+        context_snippets = await self.find_relevant_context(query, paper_content, paper_categories)
         
         # Format context for the prompt
         context_prompt = ""
         if context_snippets:
             context_prompt = "\n\nRelevant research context:\n\n"
             for i, snippet in enumerate(context_snippets, 1):
-                context_prompt += f"{i}. From {snippet['paper_title']} ({snippet['paper_year']}):\n"
-                context_prompt += f"{snippet['content']}\n\n"
+                # Add categories for the paper if available
+                categories_str = ""
+                if snippet.get('categories'):
+                    # Try to get human-readable labels for categories
+                    try:
+                        category_labels = [
+                            f"{cat} ({model_service.get_category_label(cat)})" 
+                            for cat in snippet.get('categories', [])
+                        ]
+                        categories_str = f" [Categories: {', '.join(category_labels)}]"
+                    except Exception:
+                        # Fall back to just the category codes if labels aren't available
+                        categories_str = f" [Categories: {', '.join(snippet.get('categories', []))}]"
+                
+                context_prompt += f"{i}. From {snippet['title']} ({snippet.get('paper_year', 'Unknown')}){categories_str}:\n"
+                for snip in snippet['snippets']:
+                    context_prompt += f"   {snip['section'].upper()}: {snip['content']}\n\n"
         
-        # Add current paper content if available
+        # Add current paper content and categories if available
         paper_prompt = ""
         if paper_content:
             paper_prompt = f"\n\nCurrent paper content:\n\n{paper_content[:self.context_window]}"
+            
+            # Add current paper categories if available
+            if paper_categories:
+                try:
+                    # Try to get human-readable labels for categories
+                    category_labels = [
+                        f"{cat} ({model_service.get_category_label(cat)})" 
+                        for cat in paper_categories
+                    ]
+                    paper_prompt += f"\n\nCurrent paper categories: {', '.join(category_labels)}"
+                except Exception:
+                    # Fall back to just the category codes
+                    paper_prompt += f"\n\nCurrent paper categories: {', '.join(paper_categories)}"
         
         # Generate response using the LLM
         full_prompt = f"""

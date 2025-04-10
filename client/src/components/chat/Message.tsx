@@ -1,20 +1,29 @@
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { MessageType } from "./types";
 import { FaPaintBrush, FaFile, FaSpinner, FaTag } from "react-icons/fa";
 import Markdown from "react-markdown";
+
+interface CategoryObject {
+  code: string;
+  label: string;
+}
 
 export default function Message({
   message,
 }: {
   message: MessageType;
 }): ReactElement {
-  // Debug logging for message props
-  console.log("Message props:", {
-    role: message.role,
-    content: message.content.substring(0, 50) + "...",
-    metadata: message.metadata,
-    categories: message.metadata?.paper_categories,
-  });
+  // More detailed debug logging to help troubleshoot
+  useEffect(() => {
+    if (message.metadata?.paper_categories) {
+      console.log("Paper categories received:", JSON.stringify(message.metadata.paper_categories, null, 2));
+      console.log("Type of first category:", message.metadata.paper_categories.length > 0 ? 
+        typeof message.metadata.paper_categories[0] : "none");
+      if (message.metadata.paper_categories.length > 0 && typeof message.metadata.paper_categories[0] === 'object') {
+        console.log("Properties:", Object.keys(message.metadata.paper_categories[0]));
+      }
+    }
+  }, [message.metadata?.paper_categories]);
 
   // System messages should be centered and have a distinctive style
   if (message.role === "system") {
@@ -37,6 +46,16 @@ export default function Message({
 
   // Get paper categories if they exist
   const paperCategories = message.metadata?.paper_categories || [];
+
+  // More robust check for object categories
+  const isObjectCategories = paperCategories.length > 0 && 
+    typeof paperCategories[0] === 'object' && 
+    paperCategories[0] !== null &&
+    (paperCategories[0] as any).code !== undefined;
+  
+  // Force render of categories for debugging
+  console.log("paperCategories:", paperCategories);
+  console.log("isObjectCategories:", isObjectCategories);
 
   return (
     <div
@@ -99,21 +118,36 @@ export default function Message({
         </div>
       ) : (
         <div className="rounded-md bg-white p-3 text-black">
-          {paperCategories.length > 0 && (
+          {Array.isArray(paperCategories) && paperCategories.length > 0 && (
             <div className="mb-3">
               <div className="text-xs text-gray-500 mb-1">
                 Paper Categories:
               </div>
               <div className="flex flex-wrap gap-1">
-                {paperCategories.map((category: string, index: number) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
-                  >
-                    <FaTag className="mr-1" />
-                    {category}
-                  </span>
-                ))}
+                {isObjectCategories ? 
+                  // Handle array of category objects with code and label
+                  paperCategories.map((category: any, index: number) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                      title={category.code}
+                    >
+                      <FaTag className="mr-1" />
+                      {category.label || category.code || "Unknown"}
+                    </span>
+                  ))
+                : 
+                  // Handle array of category strings (backward compatibility)
+                  paperCategories.map((category: any, index: number) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                    >
+                      <FaTag className="mr-1" />
+                      {typeof category === 'string' ? category : JSON.stringify(category)}
+                    </span>
+                  ))
+                }
               </div>
             </div>
           )}

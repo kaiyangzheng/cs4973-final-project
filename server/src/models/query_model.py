@@ -16,12 +16,16 @@ class UserQuery(db.Model):
         """
         Convert the model to a dictionary for JSON serialization
         """
+        # Parse categories once to avoid duplication
+        parsed_categories = json.loads(self.paper_categories) if self.paper_categories else None
+        
         return {
             'id': self.id,
             'prompt': self.prompt,
             'response': self.response,
             'pending': self.pending,
-            'paper_categories': json.loads(self.paper_categories) if self.paper_categories else None,
+            'paper_categories': parsed_categories,  # For backward compatibility
+            'categories': parsed_categories,  # New field for frontend
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
             'socket_id': self.socket_id

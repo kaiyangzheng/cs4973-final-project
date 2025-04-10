@@ -32,8 +32,19 @@ class VectorDatabase:
         """Get categories for a paper"""
         return self.paper_categories.get(paper_id, [])
         
-    def search(self, query_vector: np.ndarray, top_k: int = 5) -> List[Tuple[Dict[str, Any], float]]:
-        """Search for similar vectors using cosine similarity"""
+    def search(self, query_vector: np.ndarray, top_k: int = 5, boost_categories: List[str] = None, category_boost: float = 0.2) -> List[Tuple[Dict[str, Any], float]]:
+        """
+        Search for similar vectors using cosine similarity, with optional category boosting
+        
+        Args:
+            query_vector: The query vector to search for
+            top_k: Number of results to return
+            boost_categories: Categories to boost in the search results
+            category_boost: How much to boost papers with matching categories
+            
+        Returns:
+            List of (metadata, similarity) tuples
+        """
         if not self.vectors:
             return []
             
@@ -50,6 +61,21 @@ class VectorDatabase:
         
         # Calculate cosine similarities
         similarities = np.dot(self.vectors, query_vector)
+        
+        # Apply category boosting if categories are provided
+        if boost_categories and len(boost_categories) > 0:
+            print(f"Boosting papers with categories: {boost_categories}")
+            for i, metadata in enumerate(self.metadata):
+                paper_id = metadata.get('id')
+                if paper_id and paper_id in self.paper_categories:
+                    paper_cats = self.paper_categories[paper_id]
+                    # Add boost for each matching category
+                    matching_categories = set(boost_categories).intersection(set(paper_cats))
+                    if matching_categories:
+                        # Boost proportional to number of matching categories
+                        boost = category_boost * len(matching_categories) / len(boost_categories)
+                        similarities[i] += boost
+                        print(f"Boosting paper {metadata.get('title', 'Unknown')} by {boost} for matching categories: {matching_categories}")
         
         # Get top k results
         top_indices = np.argsort(similarities)[-top_k:][::-1]

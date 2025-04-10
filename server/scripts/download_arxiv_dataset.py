@@ -124,7 +124,7 @@ def process_dataset(output_dir):
 def main():
     """Main function"""
     parser = argparse.ArgumentParser(description='Download and process the ArXiv CS papers dataset')
-    parser.add_argument('--output_dir', default='./data/arxiv_cs_papers', help='Directory to save the dataset')
+    parser.add_argument('--output_dir', default='./data', help='Directory to save the dataset')
     parser.add_argument('--extract_only', action='store_true', help='Extract the dataset only')
     parser.add_argument('--process_only', action='store_true', help='Process the dataset only')
     

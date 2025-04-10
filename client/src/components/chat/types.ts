@@ -7,7 +7,7 @@ export interface MessageType {
     selectionLength?: number;
     selectionPreview?: string;
     isFullDocument?: boolean;
-    paper_categories?: string[];
+    paper_categories?: Array<string | { code: string; label: string }>;
     [key: string]: unknown;
   };
 }
