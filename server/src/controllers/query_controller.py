@@ -54,7 +54,7 @@ def get_queries():
     # return the json response
     return Response(json.dumps(queries_json), mimetype="application/json")
 
-def run_async_task(flask_app, query_id, prompt, paper_content, socket_id):
+def run_async_task(flask_app, query_id, prompt, paper_content, socket_id, use_rag=True):
     """Run an asyncio coroutine in a separate thread"""
     print(f"\n==== Starting async task for query_id: {query_id}, socket_id: {socket_id} ====")
     print(f"Prompt: {prompt[:50]}...")
@@ -71,8 +71,8 @@ def run_async_task(flask_app, query_id, prompt, paper_content, socket_id):
                 print(f"Creating event loop for query {query_id}")
                 # Run the coroutine in the new loop
                 print(f"Calling process_user_query for query {query_id}")
-                # Pass the socket_id to process_user_query
-                result = loop.run_until_complete(process_user_query(prompt, paper_content, socket_id))
+                # Pass the socket_id to process_user_query  
+                result = loop.run_until_complete(process_user_query(prompt, paper_content, socket_id, use_rag))
                 print(f"Query {query_id} - Got result: {result.keys() if result else 'None'}")
 
                 # Get the query from the database
@@ -150,6 +150,7 @@ def add_query():
     
     # Get the socket ID from the request if available, or use a default
     socket_id = data.get("socket_id")
+    use_rag = bool(data.get("use_rag", True))
     
     # Create a new query object with pending status and socket_id
     query = UserQuery(
@@ -174,7 +175,7 @@ def add_query():
         # Start a background thread to process the query
         thread = threading.Thread(
             target=run_async_task, 
-            args=(app, query_id, prompt, paper_content, socket_id)
+            args=(app, query_id, prompt, paper_content, socket_id, use_rag),
         )
         thread.daemon = True
         thread.start()
@@ -192,6 +193,125 @@ def add_query():
 
     # Return the query immediately with pending status
     return Response(json.dumps(query.to_dict()), mimetype="application/json")
+
+def process_benchmark_query(query_id, prompt, paper_content, use_rag=True):
+    """
+    Process a query synchronously for benchmarking purposes.
+    Returns the result directly without using WebSockets.
+    
+    Args:
+        query_id (int): The ID of the query in the database
+        prompt (str): The user's prompt
+        paper_content (str, optional): Paper content to process with the prompt
+        use_rag (bool, optional): Whether to use RAG. Defaults to True
+        
+    Returns:
+        dict: The processed result containing response and categories
+    """
+    print(f"\n==== Starting synchronous benchmark task for query_id: {query_id} ====")
+    print(f"Prompt: {prompt[:50]}...")
+    print(f"Has paper content: {paper_content is not None}")
+    
+    try:
+        # Create a new event loop
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        try:
+            # Run the coroutine synchronously
+            result = loop.run_until_complete(process_user_query(prompt, paper_content, None, use_rag))
+            print(f"Query {query_id} - Got result: {result.keys() if result else 'None'}")
+            return result
+        
+        finally:
+            # Clean up
+            loop.close()
+            print(f"Closed event loop for query {query_id}")
+    
+    except Exception as e:
+        print(f"Error for query {query_id}: {str(e)}")
+        print(f"Error type: {type(e).__name__}")
+        import traceback
+        print(traceback.format_exc())
+        # Re-raise to be handled by the route
+        raise
+    
+    finally:
+        print(f"==== Completed benchmark task for query_id: {query_id} ====\n")
+
+
+@queries.route("/benchmark", methods=["POST"])
+def benchmark_query():
+    """
+    Process a query synchronously for benchmarking purposes.
+    Waits for the LLM response before returning the HTTP response.
+    """
+    # Get the data from the request
+    data = request.get_json()
+    
+    # Extract necessary information
+    prompt = data["prompt"]
+    paper_content = data.get("paper_content")
+    use_rag = bool(data.get("use_rag", True))
+    
+    # Create a new query object with pending status
+    query = UserQuery(
+        prompt=prompt,
+        response="",
+        pending=True,
+    )
+    
+    # Save the query to get an ID
+    db.session.add(query)
+    db.session.commit()
+    query_id = query.id
+    
+    try:
+        # Process the query synchronously using the dedicated function
+        result = process_benchmark_query(query_id, prompt, paper_content, use_rag)
+        
+        # Get response from result
+        response_text = result.get("response", "No response received")
+        
+        # Get categories if available
+        categories = None
+        if 'categories' in result and result['categories']:
+            categories = result['categories']
+            print(f"Found categories in 'categories' key: {categories}")
+        elif 'paper_categories' in result and result['paper_categories']:
+            categories = result['paper_categories']
+            print(f"Found categories in 'paper_categories' key: {categories}")
+        
+        # Update the query with the results
+        query.response = response_text
+        query.pending = False
+        
+        # Store paper categories as JSON string if they exist
+        if categories:
+            query.paper_categories = json.dumps(categories)
+            print(f"Added categories for query {query_id}: {categories}")
+        
+        db.session.commit()
+        print(f"Successfully updated query {query_id}, pending={query.pending}")
+        
+        # Prepare the response data
+        response_data = query.to_dict()
+        
+        # Return the complete response
+        return Response(json.dumps(response_data), mimetype="application/json")
+    
+    except Exception as e:
+        # Update the query with the error
+        query.response = f"Error processing request: {str(e)}"
+        query.pending = False
+        db.session.commit()
+        
+        # Return the error response
+        return Response(
+            json.dumps({"success": False, "message": str(e), "query": query.to_dict()}),
+            mimetype="application/json",
+            status=500
+        )
 
 @queries.route("/", methods=["DELETE"])
 def clear_queries():

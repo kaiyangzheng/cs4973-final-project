@@ -104,7 +104,7 @@ class RAGService:
         
         return relevant_sections
     
-    async def generate_response(self, query: str, paper_content: Optional[str] = None) -> str:
+    async def generate_response(self, query: str, paper_content: Optional[str] = None, use_rag: bool = True) -> str:
         """
         Generate a response using RAG
         
@@ -115,9 +115,13 @@ class RAGService:
         Returns:
             Generated response with relevant context
         """
+        print(f"Generating response for query: {query}")
+        print(f"Current paper content: {paper_content[:100] if paper_content else 'No content provided'}")
+        print(f"Use RAG: {use_rag}")
+        
         # Get categories for the current paper if available
         paper_categories = []
-        if paper_content:
+        if paper_content and use_rag:
             try:
                 paper_categories = model_service.predict_categories(paper_content)
                 print(f"Current paper categories: {paper_categories}")
@@ -126,10 +130,9 @@ class RAGService:
         
         # Find relevant context with category boosting
         context_snippets = await self.find_relevant_context(query, paper_content, paper_categories)
-        
         # Format context for the prompt
         context_prompt = ""
-        if context_snippets:
+        if context_snippets and use_rag:
             context_prompt = "\n\nRelevant research context:\n\n"
             for i, snippet in enumerate(context_snippets, 1):
                 # Add categories for the paper if available
@@ -156,7 +159,7 @@ class RAGService:
             paper_prompt = f"\n\nCurrent paper content:\n\n{paper_content[:self.context_window]}"
             
             # Add current paper categories if available
-            if paper_categories:
+            if paper_categories and use_rag:
                 try:
                     # Try to get human-readable labels for categories
                     category_labels = [
@@ -168,16 +171,27 @@ class RAGService:
                     # Fall back to just the category codes
                     paper_prompt += f"\n\nCurrent paper categories: {', '.join(paper_categories)}"
         
+
         # Generate response using the LLM
-        full_prompt = f"""
-        Based on the following context and query:
-        
-        {context_prompt}
-        {paper_prompt}
-        
-        Query: {query}
-        """
-        
+        if use_rag:
+            full_prompt = f"""
+            Based on the following context and query:
+            
+            {context_prompt}
+            {paper_prompt}
+            
+            Query: {query}
+            """
+            print("RAG prompt: " + full_prompt)
+        else:
+            full_prompt = f"""
+            Based on the following query:
+            
+            {paper_prompt}
+            
+            Query: {query}
+            """        
+            print("Non-RAG prompt: " + full_prompt)
         response = await call_llm(full_prompt)
         return response
 
