@@ -315,7 +315,7 @@ def main():
     parser.add_argument('--csv_path', default='./data/cs_papers_api.csv', help='Path to the CSV file')
     parser.add_argument('--model_name', default='distilbert-base-uncased', help='Base model name')
     parser.add_argument('--output_dir', default='./data/trained_model', help='Directory to save the model')
-    parser.add_argument('--max_samples', type=int, default=10000, help='Maximum number of samples to use')
+    parser.add_argument('--max_samples', type=int, default=100000, help='Maximum number of samples to use')
     parser.add_argument('--batch_size', type=int, default=4, help='Batch size')
     parser.add_argument('--epochs', type=int, default=3, help='Number of epochs')
     parser.add_argument('--learning_rate', type=float, default=2e-5, help='Learning rate')

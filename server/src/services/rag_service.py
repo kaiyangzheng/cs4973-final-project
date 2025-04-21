@@ -14,6 +14,132 @@ class RAGService:
     def __init__(self):
         self.context_window = 2000  # Number of tokens to use for context
     
+    def _extract_paper_key_sections(self, paper_content: str) -> str:
+        """
+        Extract key sections from paper content for embedding
+        
+        Args:
+            paper_content: Full paper content
+            
+        Returns:
+            String containing key sections (abstract, intro, conclusion) if identifiable
+        """
+        if not paper_content:
+            return ""
+            
+        # Try to identify key sections with common headings
+        sections = []
+        
+        # Look for abstract (usually at the beginning)
+        abstract_markers = ["abstract", "summary"]
+        for marker in abstract_markers:
+            if marker in paper_content.lower()[:1000]:
+                start_idx = paper_content.lower().find(marker)
+                end_idx = paper_content.find("\n\n", start_idx + len(marker))
+                if end_idx == -1:
+                    end_idx = min(start_idx + 1000, len(paper_content))
+                sections.append(paper_content[start_idx:end_idx])
+                break
+                
+        # Look for introduction
+        intro_markers = ["introduction", "1. introduction", "i. introduction"]
+        for marker in intro_markers:
+            if marker in paper_content.lower():
+                start_idx = paper_content.lower().find(marker)
+                end_idx = paper_content.find("\n\n", start_idx + len(marker))
+                if end_idx == -1:
+                    end_idx = min(start_idx + 1000, len(paper_content))
+                sections.append(paper_content[start_idx:end_idx])
+                break
+                
+        # Look for conclusion
+        conclusion_markers = ["conclusion", "conclusions", "discussion"]
+        for marker in conclusion_markers:
+            if marker in paper_content.lower():
+                start_idx = paper_content.lower().find(marker)
+                end_idx = paper_content.find("\n\n", start_idx + len(marker))
+                if end_idx == -1:
+                    end_idx = min(start_idx + 1000, len(paper_content))
+                sections.append(paper_content[start_idx:end_idx])
+                break
+                
+        # If no sections found, use the beginning of the paper
+        if not sections and paper_content:
+            sections.append(paper_content[:1000])
+            
+        return "\n".join(sections)
+        
+    def _get_combined_query_vector(self, query: str, paper_content: Optional[str] = None, query_weight: float = 0.5) -> np.ndarray:
+        """
+        Create a combined query vector from both the query and paper content
+        
+        Args:
+            query: The user's query
+            paper_content: Optional content of the current paper
+            query_weight: Weight to give the query (0-1), with remainder going to paper content
+            
+        Returns:
+            Combined embedding vector
+        """
+        # Get query embedding
+        query_embedding = get_embedding(query)
+        
+        # If no paper content, just return the query embedding
+        if not paper_content:
+            return query_embedding
+            
+        # Adjust query weight based on query type
+        adjusted_weight = query_weight
+        
+        # Simple commands: heavily favor paper content
+        command_phrases = [
+            "summarize", "summary", "explain", "describe",
+            "what is", "tell me about", "analyze"
+        ]
+        if any(query.lower().startswith(phrase) for phrase in command_phrases) or len(query.split()) <= 2:
+            adjusted_weight = 0.1  # 90% paper content, 10% query
+            print(f"Command detected, using 10/90 weight balance (favoring paper content)")
+        
+        # Paper-focused queries: heavily favor paper content
+        paper_focused_phrases = [
+            "in this paper", "the paper", "this paper", 
+            "the authors", "their method", "their approach",
+            "how does the", "explain the", "discuss the",
+            "content of", "about this", "this research"
+        ]
+        if any(phrase in query.lower() for phrase in paper_focused_phrases):
+            adjusted_weight = 0.2  # 80% paper content, 20% query
+            print(f"Paper-focused query detected, using 20/80 weight balance (favoring paper content)")
+            
+        # Related work queries: focus more on paper content but keep reasonable query weight
+        related_work_phrases = [
+            "related to", "similar to", "compared to",
+            "other papers", "related papers", "similar papers",
+            "related work", "similar work", "other work"
+        ]
+        if any(phrase in query.lower() for phrase in related_work_phrases):
+            adjusted_weight = 0.3  # 70% paper content, 30% query
+            print(f"Related-work query detected, using 30/70 weight balance (favoring paper content)")
+            
+        # Extract key sections from paper content
+        paper_sections = self._extract_paper_key_sections(paper_content)
+        if not paper_sections:
+            return query_embedding
+            
+        # Get paper embedding
+        paper_embedding = get_embedding(paper_sections)
+        
+        # Combine embeddings with weights
+        combined_embedding = (adjusted_weight * query_embedding + 
+                            (1 - adjusted_weight) * paper_embedding)
+        
+        # Normalize the combined embedding
+        norm = np.linalg.norm(combined_embedding)
+        if norm > 0:
+            combined_embedding = combined_embedding / norm
+            
+        return combined_embedding
+    
     async def find_relevant_context(self, query: str, paper_content: Optional[str] = None, paper_categories: List[str] = None) -> List[Dict[str, Any]]:
         """
         Find relevant context from the paper database
@@ -27,8 +153,14 @@ class RAGService:
             List of context snippets from relevant papers
         """
         try:
-            # Get embedding for the query
-            query_embedding = get_embedding(query)
+            # Get combined embedding for the query and paper content
+            query_embedding = self._get_combined_query_vector(query, paper_content)
+            
+            # Debug info about combined embedding
+            if paper_content:
+                print(f"Using combined query vector with dynamic weighting")
+            else:
+                print("Using query vector only (no paper content provided)")
             
             # Get paper categories if not provided but paper content is available
             if not paper_categories and paper_content:
@@ -182,9 +314,14 @@ class RAGService:
         Args:
             query: The user's query
             paper_content: Optional content of the current paper
+            use_rag: Whether to use RAG or just answer directly
             
         Returns:
             Generated response with relevant context
+            
+        Note:
+            This method uses a combined query vector from both the user's query and paper content
+            to find relevant context in the paper database, improving search relevance.
         """
         print(f"Generating response for query: {query}")
         print(f"Current paper content: {paper_content[:100] if paper_content else 'No content provided'}")
