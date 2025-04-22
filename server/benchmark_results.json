@@ -1,0 +1,1238 @@
+{
+  "results": [
+    {
+      "paper_id": "2008.05782v2",
+      "title": "Identifying candidate routines for Robotic Process Automation from unsegmented UI logs",
+      "true_categories": [
+        "cs.SE"
+      ],
+      "predicted_categories": [
+        "cs.SE"
+      ],
+      "correct_categories": [
+        "cs.SE"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "1904.07428v2",
+      "title": "A Medical Literature Search System for Identifying Effective Treatments in Precision Medicine",
+      "true_categories": [
+        "cs.IR"
+      ],
+      "predicted_categories": [
+        "cs.IR"
+      ],
+      "correct_categories": [
+        "cs.IR"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2207.08336v1",
+      "title": "On Fair Classification with Mostly Private Sensitive Attributes",
+      "true_categories": [
+        "cs.CR",
+        "cs.LG",
+        "cs.AI",
+        "cs.CY"
+      ],
+      "predicted_categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CY"
+      ],
+      "correct_categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CY"
+      ],
+      "missing_categories": [
+        "cs.CR"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1_score": 0.8571428571428571
+    },
+    {
+      "paper_id": "1506.04782v2",
+      "title": "Cheap Bandits",
+      "true_categories": [
+        "cs.LG"
+      ],
+      "predicted_categories": [
+        "cs.LG"
+      ],
+      "correct_categories": [
+        "cs.LG"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2008.06099v1",
+      "title": "Identifying Usability Issues of Software Analytics Applications in Immersive Augmented Reality",
+      "true_categories": [
+        "cs.HC"
+      ],
+      "predicted_categories": [
+        "cs.HC"
+      ],
+      "correct_categories": [
+        "cs.HC"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2003.08364v1",
+      "title": "Dynamic Budget Management with Service Guarantees for Mixed-Criticality Systems",
+      "true_categories": [
+        "cs.OS",
+        "cs.DC"
+      ],
+      "predicted_categories": [
+        "cs.DC",
+        "cs.NI",
+        "cs.SY"
+      ],
+      "correct_categories": [
+        "cs.DC"
+      ],
+      "missing_categories": [
+        "cs.OS"
+      ],
+      "extra_categories": [
+        "cs.NI",
+        "cs.SY"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": false,
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1_score": 0.4
+    },
+    {
+      "paper_id": "1604.04146v1",
+      "title": "A Discrete Firefly Algorithm to Solve a Rich Vehicle Routing Problem Modelling a Newspaper Distribution System with Recycling Policy",
+      "true_categories": [
+        "cs.NE",
+        "cs.AI"
+      ],
+      "predicted_categories": [
+        "cs.NE"
+      ],
+      "correct_categories": [
+        "cs.NE"
+      ],
+      "missing_categories": [
+        "cs.AI"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "1912.12828v1",
+      "title": "ICSTrace: A Malicious IP Traceback Model for Attacking Data of Industrial Control System",
+      "true_categories": [
+        "cs.CR",
+        "cs.NI",
+        "cs.LG",
+        "cs.RO"
+      ],
+      "predicted_categories": [
+        "cs.CR"
+      ],
+      "correct_categories": [
+        "cs.CR"
+      ],
+      "missing_categories": [
+        "cs.LG",
+        "cs.NI",
+        "cs.RO"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.25,
+      "f1_score": 0.4
+    },
+    {
+      "paper_id": "0604106v1",
+      "title": "Bounded expected delay in arithmetic coding",
+      "true_categories": [
+        "cs.IT"
+      ],
+      "predicted_categories": [
+        "cs.IT"
+      ],
+      "correct_categories": [
+        "cs.IT"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2007.09703v1",
+      "title": "A curated collection of COVID-19 online datasets",
+      "true_categories": [
+        "cs.IR"
+      ],
+      "predicted_categories": [
+        "cs.CY",
+        "cs.SI"
+      ],
+      "correct_categories": [],
+      "missing_categories": [
+        "cs.IR"
+      ],
+      "extra_categories": [
+        "cs.CY",
+        "cs.SI"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": false,
+      "any_correct_none_wrong": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0
+    },
+    {
+      "paper_id": "1310.8089v2",
+      "title": "Reducing complexes in multidimensional persistent homology theory",
+      "true_categories": [
+        "cs.CG"
+      ],
+      "predicted_categories": [
+        "cs.CG"
+      ],
+      "correct_categories": [
+        "cs.CG"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "1310.5008v1",
+      "title": "Thompson Sampling in Dynamic Systems for Contextual Bandit Problems",
+      "true_categories": [
+        "cs.LG"
+      ],
+      "predicted_categories": [
+        "cs.LG"
+      ],
+      "correct_categories": [
+        "cs.LG"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2208.00277v4",
+      "title": "MobileNeRF: Exploiting the Polygon Rasterization Pipeline for Efficient Neural Field Rendering on Mobile Architectures",
+      "true_categories": [
+        "cs.CV",
+        "cs.LG",
+        "cs.GR"
+      ],
+      "predicted_categories": [
+        "cs.CV",
+        "cs.GR"
+      ],
+      "correct_categories": [
+        "cs.CV",
+        "cs.GR"
+      ],
+      "missing_categories": [
+        "cs.LG"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.6666666666666666,
+      "f1_score": 0.8
+    },
+    {
+      "paper_id": "2208.13086v1",
+      "title": "Label-Efficient Self-Training for Attribute Extraction from Semi-Structured Web Documents",
+      "true_categories": [
+        "cs.LG",
+        "cs.IR"
+      ],
+      "predicted_categories": [
+        "cs.IR"
+      ],
+      "correct_categories": [
+        "cs.IR"
+      ],
+      "missing_categories": [
+        "cs.LG"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "1903.05341v1",
+      "title": "An Unique and Novel Graph Matrix for Efficient Extraction of Structural Information of Networks",
+      "true_categories": [
+        "cs.DM"
+      ],
+      "predicted_categories": [
+        "cs.DS",
+        "cs.SI"
+      ],
+      "correct_categories": [],
+      "missing_categories": [
+        "cs.DM"
+      ],
+      "extra_categories": [
+        "cs.DS",
+        "cs.SI"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": false,
+      "any_correct_none_wrong": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0
+    },
+    {
+      "paper_id": "1909.01019v2",
+      "title": "On Loss Functions for Supervised Monaural Time-Domain Speech Enhancement",
+      "true_categories": [
+        "cs.LG",
+        "cs.SD"
+      ],
+      "predicted_categories": [
+        "cs.SD"
+      ],
+      "correct_categories": [
+        "cs.SD"
+      ],
+      "missing_categories": [
+        "cs.LG"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "2206.01003v3",
+      "title": "Shortest Path Networks for Graph Property Prediction",
+      "true_categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "predicted_categories": [
+        "cs.LG",
+        "cs.SI"
+      ],
+      "correct_categories": [
+        "cs.LG"
+      ],
+      "missing_categories": [
+        "cs.AI"
+      ],
+      "extra_categories": [
+        "cs.SI"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": false,
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1_score": 0.5
+    },
+    {
+      "paper_id": "2206.07171v2",
+      "title": "Automated image analysis in large-scale cellular electron microscopy: A literature survey",
+      "true_categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "predicted_categories": [
+        "cs.CV"
+      ],
+      "correct_categories": [
+        "cs.CV"
+      ],
+      "missing_categories": [
+        "cs.AI"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "2109.09349v1",
+      "title": "Grouping Search Results with Product Graphs in E-commerce Platforms",
+      "true_categories": [
+        "cs.LG",
+        "cs.IR"
+      ],
+      "predicted_categories": [
+        "cs.IR"
+      ],
+      "correct_categories": [
+        "cs.IR"
+      ],
+      "missing_categories": [
+        "cs.LG"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "1709.10204v2",
+      "title": "A Neural Comprehensive Ranker (NCR) for Open-Domain Question Answering",
+      "true_categories": [
+        "cs.NE",
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "predicted_categories": [
+        "cs.CL",
+        "cs.IR"
+      ],
+      "correct_categories": [
+        "cs.CL"
+      ],
+      "missing_categories": [
+        "cs.NE",
+        "cs.LG",
+        "cs.AI"
+      ],
+      "extra_categories": [
+        "cs.IR"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": false,
+      "precision": 0.5,
+      "recall": 0.25,
+      "f1_score": 0.3333333333333333
+    },
+    {
+      "paper_id": "2112.14831v1",
+      "title": "A Hardware-Software Stack for Serverless Edge Swarms",
+      "true_categories": [
+        "cs.AR",
+        "cs.DC"
+      ],
+      "predicted_categories": [
+        "cs.DC"
+      ],
+      "correct_categories": [
+        "cs.DC"
+      ],
+      "missing_categories": [
+        "cs.AR"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "1801.05831v2",
+      "title": "An Experimental Study of Cryptocurrency Market Dynamics",
+      "true_categories": [
+        "cs.HC",
+        "cs.CY",
+        "cs.SI"
+      ],
+      "predicted_categories": [
+        "cs.CR"
+      ],
+      "correct_categories": [],
+      "missing_categories": [
+        "cs.HC",
+        "cs.CY",
+        "cs.SI"
+      ],
+      "extra_categories": [
+        "cs.CR"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": false,
+      "any_correct_none_wrong": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0
+    },
+    {
+      "paper_id": "2302.07843v1",
+      "title": "Quantifying gender imbalance in East Asian academia",
+      "true_categories": [
+        "cs.DL"
+      ],
+      "predicted_categories": [
+        "cs.DL"
+      ],
+      "correct_categories": [
+        "cs.DL"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2207.02641v1",
+      "title": "Reforming an Envy-Free Matching",
+      "true_categories": [
+        "cs.DS",
+        "cs.AI",
+        "cs.GT"
+      ],
+      "predicted_categories": [
+        "cs.GT"
+      ],
+      "correct_categories": [
+        "cs.GT"
+      ],
+      "missing_categories": [
+        "cs.DS",
+        "cs.AI"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1_score": 0.5
+    },
+    {
+      "paper_id": "2205.08493v1",
+      "title": "Faster Knapsack Algorithms via Bounded Monotone Min-Plus-Convolution",
+      "true_categories": [
+        "cs.DS"
+      ],
+      "predicted_categories": [
+        "cs.DS"
+      ],
+      "correct_categories": [
+        "cs.DS"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2111.15097v2",
+      "title": "EAGAN: Efficient Two-stage Evolutionary Architecture Search for GANs",
+      "true_categories": [
+        "cs.CV",
+        "cs.LG",
+        "cs.NE"
+      ],
+      "predicted_categories": [
+        "cs.NE",
+        "cs.LG"
+      ],
+      "correct_categories": [
+        "cs.NE",
+        "cs.LG"
+      ],
+      "missing_categories": [
+        "cs.CV"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.6666666666666666,
+      "f1_score": 0.8
+    },
+    {
+      "paper_id": "1304.5212v1",
+      "title": "Object Tracking in Videos: Approaches and Issues",
+      "true_categories": [
+        "cs.CV"
+      ],
+      "predicted_categories": [
+        "cs.CV"
+      ],
+      "correct_categories": [
+        "cs.CV"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "1703.06293v1",
+      "title": "Software Metrics in Boa Large-Scale Software Mining Infrastructure: Challenges and Solutions",
+      "true_categories": [
+        "cs.SE"
+      ],
+      "predicted_categories": [
+        "cs.SE"
+      ],
+      "correct_categories": [
+        "cs.SE"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "1603.04314v1",
+      "title": "Gradient approximation and extremum seeking via needle variations",
+      "true_categories": [
+        "cs.SY"
+      ],
+      "predicted_categories": [
+        "cs.CE",
+        "cs.LG",
+        "cs.NA"
+      ],
+      "correct_categories": [],
+      "missing_categories": [
+        "cs.SY"
+      ],
+      "extra_categories": [
+        "cs.CE",
+        "cs.LG",
+        "cs.NA"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": false,
+      "any_correct_none_wrong": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0
+    },
+    {
+      "paper_id": "2210.04413v1",
+      "title": "Asynchronous Collaborative Autoscanning with Mode Switching for Multi-Robot Scene Reconstruction",
+      "true_categories": [
+        "cs.GR",
+        "cs.RO"
+      ],
+      "predicted_categories": [
+        "cs.RO"
+      ],
+      "correct_categories": [
+        "cs.RO"
+      ],
+      "missing_categories": [
+        "cs.GR"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "2010.03749v1",
+      "title": "Tatum-Level Drum Transcription Based on a Convolutional Recurrent Neural Network with Language Model-Based Regularized Training",
+      "true_categories": [
+        "cs.LG",
+        "cs.SD"
+      ],
+      "predicted_categories": [
+        "cs.SD"
+      ],
+      "correct_categories": [
+        "cs.SD"
+      ],
+      "missing_categories": [
+        "cs.LG"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "1703.06934v3",
+      "title": "Ensemble representation learning: an analysis of fitness and survival for wrapper-based genetic programming methods",
+      "true_categories": [
+        "cs.NE",
+        "cs.LG"
+      ],
+      "predicted_categories": [
+        "cs.NE",
+        "cs.LG"
+      ],
+      "correct_categories": [
+        "cs.NE",
+        "cs.LG"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2007.02261v4",
+      "title": "A Framework for Modelling, Verification and Transformation of Concurrent Imperative Programs",
+      "true_categories": [
+        "cs.LO"
+      ],
+      "predicted_categories": [
+        "cs.LO",
+        "cs.PL"
+      ],
+      "correct_categories": [
+        "cs.LO"
+      ],
+      "missing_categories": [],
+      "extra_categories": [
+        "cs.PL"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": false,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "2004.08732v5",
+      "title": "On the existence and non-existence of improper homomorphisms of oriented and $2$-edge-coloured graphs to reflexive targets",
+      "true_categories": [
+        "cs.DM"
+      ],
+      "predicted_categories": [
+        "cs.CC",
+        "cs.DM",
+        "cs.DS"
+      ],
+      "correct_categories": [
+        "cs.DM"
+      ],
+      "missing_categories": [],
+      "extra_categories": [
+        "cs.CC",
+        "cs.DS"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": false,
+      "precision": 0.3333333333333333,
+      "recall": 1.0,
+      "f1_score": 0.5
+    },
+    {
+      "paper_id": "2002.04700v4",
+      "title": "A Single RGB Camera Based Gait Analysis with a Mobile Tele-Robot for Healthcare",
+      "true_categories": [
+        "cs.CV",
+        "cs.HC",
+        "cs.LG",
+        "cs.RO"
+      ],
+      "predicted_categories": [
+        "cs.HC",
+        "cs.RO"
+      ],
+      "correct_categories": [
+        "cs.HC",
+        "cs.RO"
+      ],
+      "missing_categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "2211.10936v2",
+      "title": "Learning to Search for Job Shop Scheduling via Deep Reinforcement Learning",
+      "true_categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "predicted_categories": [
+        "cs.LG"
+      ],
+      "correct_categories": [
+        "cs.LG"
+      ],
+      "missing_categories": [
+        "cs.AI"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "1102.4179v1",
+      "title": "Runtime Adaptability driven by Negotiable Quality Requirements",
+      "true_categories": [
+        "cs.SE"
+      ],
+      "predicted_categories": [
+        "cs.SE"
+      ],
+      "correct_categories": [
+        "cs.SE"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2206.12227v2",
+      "title": "Adversarial Robustness of Deep Neural Networks: A Survey from a Formal Verification Perspective",
+      "true_categories": [
+        "cs.CR",
+        "cs.LG",
+        "cs.SE"
+      ],
+      "predicted_categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "correct_categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "missing_categories": [
+        "cs.SE"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.6666666666666666,
+      "f1_score": 0.8
+    },
+    {
+      "paper_id": "1803.01221v1",
+      "title": "Byzantine-Resilient Locally Optimum Detection Using Collaborative Autonomous Networks",
+      "true_categories": [
+        "cs.SY"
+      ],
+      "predicted_categories": [
+        "cs.LG",
+        "cs.NI",
+        "cs.SY"
+      ],
+      "correct_categories": [
+        "cs.SY"
+      ],
+      "missing_categories": [],
+      "extra_categories": [
+        "cs.LG",
+        "cs.NI"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": false,
+      "precision": 0.3333333333333333,
+      "recall": 1.0,
+      "f1_score": 0.5
+    },
+    {
+      "paper_id": "1905.08601v3",
+      "title": "Une ou deux composantes ? La r\u00e9ponse de la diffusion en ondelettes",
+      "true_categories": [
+        "cs.SD"
+      ],
+      "predicted_categories": [
+        "cs.IT"
+      ],
+      "correct_categories": [],
+      "missing_categories": [
+        "cs.SD"
+      ],
+      "extra_categories": [
+        "cs.IT"
+      ],
+      "all_categories_correct": false,
+      "any_category_correct": false,
+      "any_correct_none_wrong": false,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0
+    },
+    {
+      "paper_id": "2008.02661v2",
+      "title": "Dynamic Emotion Modeling with Learnable Graphs and Graph Inception Network",
+      "true_categories": [
+        "cs.CV",
+        "cs.MM"
+      ],
+      "predicted_categories": [
+        "cs.CV"
+      ],
+      "correct_categories": [
+        "cs.CV"
+      ],
+      "missing_categories": [
+        "cs.MM"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "2003.00400v3",
+      "title": "Learn Task First or Learn Human Partner First: A Hierarchical Task Decomposition Method for Human-Robot Cooperation",
+      "true_categories": [
+        "cs.HC",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "predicted_categories": [
+        "cs.RO"
+      ],
+      "correct_categories": [
+        "cs.RO"
+      ],
+      "missing_categories": [
+        "cs.HC",
+        "cs.AI"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1_score": 0.5
+    },
+    {
+      "paper_id": "2211.03898v1",
+      "title": "Lessons Learned: Surveying the Practicality of Differential Privacy in the Industry",
+      "true_categories": [
+        "cs.CR"
+      ],
+      "predicted_categories": [
+        "cs.CR"
+      ],
+      "correct_categories": [
+        "cs.CR"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "1807.06731v1",
+      "title": "The MOEADr Package - A Component-Based Framework for Multiobjective Evolutionary Algorithms Based on Decomposition",
+      "true_categories": [
+        "cs.NE"
+      ],
+      "predicted_categories": [
+        "cs.NE"
+      ],
+      "correct_categories": [
+        "cs.NE"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2206.12035v1",
+      "title": "The Second Place Solution for The 4th Large-scale Video Object Segmentation Challenge--Track 3: Referring Video Object Segmentation",
+      "true_categories": [
+        "cs.CV",
+        "cs.MM"
+      ],
+      "predicted_categories": [
+        "cs.CV",
+        "cs.MM"
+      ],
+      "correct_categories": [
+        "cs.CV",
+        "cs.MM"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    {
+      "paper_id": "2007.16208v1",
+      "title": "G-CREWE: Graph CompREssion With Embedding for Network Alignment",
+      "true_categories": [
+        "cs.LG",
+        "cs.DB",
+        "cs.SI",
+        "cs.IR"
+      ],
+      "predicted_categories": [
+        "cs.SI"
+      ],
+      "correct_categories": [
+        "cs.SI"
+      ],
+      "missing_categories": [
+        "cs.LG",
+        "cs.DB",
+        "cs.IR"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.25,
+      "f1_score": 0.4
+    },
+    {
+      "paper_id": "2111.00228v2",
+      "title": "whu-nercms at trecvid2021:instance search task",
+      "true_categories": [
+        "cs.CV",
+        "cs.MM",
+        "cs.IR"
+      ],
+      "predicted_categories": [
+        "cs.IR"
+      ],
+      "correct_categories": [
+        "cs.IR"
+      ],
+      "missing_categories": [
+        "cs.CV",
+        "cs.MM"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1_score": 0.5
+    },
+    {
+      "paper_id": "2206.09495v2",
+      "title": "The Power of Regularization in Solving Extensive-Form Games",
+      "true_categories": [
+        "cs.LG",
+        "cs.GT"
+      ],
+      "predicted_categories": [
+        "cs.GT"
+      ],
+      "correct_categories": [
+        "cs.GT"
+      ],
+      "missing_categories": [
+        "cs.LG"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "2105.00991v1",
+      "title": "Context-aware Ensemble of Multifaceted Factorization Models for Recommendation Prediction in Social Networks",
+      "true_categories": [
+        "cs.CL",
+        "cs.IR"
+      ],
+      "predicted_categories": [
+        "cs.IR"
+      ],
+      "correct_categories": [
+        "cs.IR"
+      ],
+      "missing_categories": [
+        "cs.CL"
+      ],
+      "extra_categories": [],
+      "all_categories_correct": false,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6666666666666666
+    },
+    {
+      "paper_id": "2110.11729v2",
+      "title": "FakeNewsLab: Experimental Study on Biases and Pitfalls Preventing us from Distinguishing True from False News",
+      "true_categories": [
+        "cs.CY",
+        "cs.SI"
+      ],
+      "predicted_categories": [
+        "cs.CY",
+        "cs.SI"
+      ],
+      "correct_categories": [
+        "cs.CY",
+        "cs.SI"
+      ],
+      "missing_categories": [],
+      "extra_categories": [],
+      "all_categories_correct": true,
+      "any_category_correct": true,
+      "any_correct_none_wrong": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    }
+  ],
+  "metrics": {
+    "total_papers": 50,
+    "papers_with_all_categories_correct": 17,
+    "papers_with_any_category_correct": 45,
+    "papers_with_any_correct_none_wrong": 39,
+    "average_precision": 0.83,
+    "average_recall": 0.64,
+    "average_f1": 0.6824761904761906
+  },
+  "benchmark_config": {
+    "csv_path": "./data/cs_papers_api.csv",
+    "api_endpoint": "http://localhost:8000/api/queries/benchmark",
+    "sample_size": 50,
+    "random_seed": 42,
+    "timestamp": "2025-04-11T04:24:18.932335"
+  }
+}
