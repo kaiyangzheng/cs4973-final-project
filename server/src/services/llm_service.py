@@ -22,7 +22,7 @@ class CodeAgent:
         # Store conversation history by socket_id
         self.conversation_history = {}
     
-    async def process_query(self, prompt: str, paper_content: Optional[str] = None, socket_id: Optional[str] = None) -> Dict[str, Any]:
+    async def process_query(self, prompt: str, paper_content: Optional[str] = None, socket_id: Optional[str] = None, use_rag: bool = True) -> Dict[str, Any]:
         """
         Process a user query about a research paper
         
@@ -79,7 +79,7 @@ class CodeAgent:
             # Generate response using RAG
             print("Generating response using RAG...")
             # We'll let the RAG service handle the paper categories internally
-            response = await rag_service.generate_response(enhanced_prompt, paper_text)
+            response = await rag_service.generate_response(enhanced_prompt, paper_text, use_rag)
             print(f"RAG response received, length: {len(response)}")
             
             # Store this interaction in conversation history if socket_id is provided
@@ -312,7 +312,7 @@ Based on the conversation history and the current question, provide a relevant a
 # Create singleton instance
 code_agent = CodeAgent()
 
-async def process_user_query(prompt: str, paper_content: Optional[str] = None, socket_id: Optional[str] = None) -> Dict[str, Any]:
+async def process_user_query(prompt: str, paper_content: Optional[str] = None, socket_id: Optional[str] = None, use_rag: bool = True) -> Dict[str, Any]:
     """
     Process a user query and return the response
     
@@ -326,7 +326,7 @@ async def process_user_query(prompt: str, paper_content: Optional[str] = None, s
     """
     print(f"\n==== process_user_query called with prompt: {prompt[:50]}... ====")
     try:
-        result = await code_agent.process_query(prompt, paper_content, socket_id)
+        result = await code_agent.process_query(prompt, paper_content, socket_id, use_rag)
         print(f"process_user_query result: {result}")
         return result
     except Exception as e:

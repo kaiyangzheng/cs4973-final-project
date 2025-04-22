@@ -43,6 +43,26 @@ migrate = Migrate(app, db)
 # socket io instance
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+# Load embeddings into vector database
+from src.services.vector_db import vector_db
+base_dir = os.path.dirname(os.path.dirname(__file__))
+
+# Check for semantic embeddings first (preferred)
+semantic_embeddings_file = os.path.join(base_dir, 'cs_papers_semantic_embeddings.pkl')
+standard_embeddings_file = os.path.join(base_dir, 'cs_papers_embeddings.pkl')
+
+# Try loading semantic embeddings first, then fall back to standard embeddings
+if os.path.exists(semantic_embeddings_file):
+    print(f"Loading semantic embeddings from {semantic_embeddings_file}")
+    vector_db.load_embeddings(semantic_embeddings_file)
+    print(f"Loaded {len(vector_db.vectors)} semantic embeddings with {len(vector_db.categories)} categories")
+elif os.path.exists(standard_embeddings_file):
+    print(f"Semantic embeddings not found. Loading standard embeddings from {standard_embeddings_file}")
+    vector_db.load_embeddings(standard_embeddings_file)
+    print(f"Loaded {len(vector_db.vectors)} standard embeddings with {len(vector_db.categories)} categories")
+else:
+    print(f"Warning: No embeddings file found. Vector database is empty.")
+
 # import models to let the migrate tool know
 from src.models.query_model import UserQuery
 

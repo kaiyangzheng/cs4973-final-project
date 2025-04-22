@@ -1,0 +1,52 @@
+{
+  "total_samples": 13,
+  "winner_counts": {
+    "RAG": 7,
+    "Non-RAG": 4,
+    "Tie": 2
+  },
+  "win_percentage": {
+    "RAG": 53.84615384615385,
+    "Non-RAG": 30.76923076923077,
+    "Tie": 15.384615384615385
+  },
+  "average_scores": {
+    "RAG": {
+      "relevance": 5.0,
+      "accuracy": 4.769230769230769,
+      "completeness": 4.538461538461538,
+      "clarity": 4.6923076923076925
+    },
+    "Non-RAG": {
+      "relevance": 4.846153846153846,
+      "accuracy": 4.538461538461538,
+      "completeness": 4.076923076923077,
+      "clarity": 4.6923076923076925
+    }
+  },
+  "score_differences": {
+    "relevance": 0.15384615384615385,
+    "accuracy": 0.23076923076923078,
+    "completeness": 0.46153846153846156,
+    "clarity": 0.0
+  },
+  "better_system": {
+    "relevance": "RAG",
+    "accuracy": "RAG",
+    "completeness": "RAG",
+    "clarity": "Tie"
+  },
+  "overall_winner": "RAG",
+  "p_values": {
+    "relevance": 0.1654067055230178,
+    "accuracy": 0.1901514306230487,
+    "completeness": 0.08209743306494269,
+    "clarity": 1.0
+  },
+  "is_significant": {
+    "relevance": false,
+    "accuracy": false,
+    "completeness": false,
+    "clarity": false
+  }
+}

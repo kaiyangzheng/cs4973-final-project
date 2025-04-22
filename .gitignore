@@ -48,3 +48,14 @@ yarn-error.log*
 *.swp
 *.swo
 server/cs_papers_embeddings.pkl
+server/cs_papers_semantic_embeddings.pkl
+server/evaluation_results/raw_results.json
+server/evaluation_results/analysis_results.json
+client/package-lock.json
+package-lock.json
+server/evaluation_results/analysis_results.json
+client/package-lock.json
+server/evaluation_results/raw_results.json
+client/package-lock.json
+server/evaluation_results/raw_results.json
+client/package-lock.json
